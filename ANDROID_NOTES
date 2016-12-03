@@ -1,0 +1,104 @@
+################################################################################
+# Compiling the NTL library to the Android Phone
+# Document Author: Idan Warsawski (idan@bu.edu)
+# Revision Date: 2010.08.20 for NTL Version: 5.5.2_android_mod
+################################################################################
+
+################################################################################
+# Requirements:
+################################################################################
+  1: Dmitry Moskalchuk's modified Android NDK is needed, as it includes better 
+     C++ support (as of ndk-r4)
+     The download is available here: <http://www.crystax.net/android/ndk.php>. 
+     The library was compiled and tested using the r4 release.
+  2: GMP compiled for Android if GMP support is desired. 
+     (See COMPILE_GMP for instructions on how to do this)
+  3: An Android phone or emulator
+
+################################################################################
+# Compilation:
+################################################################################
+  1: Edit `makefile` using your favorite text editor, the following commands 
+     need to be modified to support your machine and configuration.
+         NDK_DIR:         This should be the root directory of the modified NDK
+                          you downloaded earlier.
+
+         PHONE_TMP:       This is a temporary directory to which you have write
+                          access to on your Andorid phone. You can make one by
+                          running `adb shell`, running `mkdir $DIR`, and 
+                          finally `chmod $DIR`. Where $DIR is a directory of 
+                          your choosing. (/data/local/src is one possibility)
+
+         TOOLCHAIN:       Which toolchain you want to use when compiling. In r4
+                          leaving this to 4.4.0 is recommended.
+
+         TARGET_ARCH_ABI: The target platform. `armeabi-v7a` will use additional
+                          features found in newer ARM chips, `armeabi` will 
+                          provide greater compatibility.
+
+         DEF_PREFIX:      The directory `make install` will copy to
+
+         GMP_PREFIX:      The directory containing your compiled GMP files.
+                          Comment out the value of this, and the following GMP
+                          lines if you don't wish to cross compile GMP into NTL
+
+ 2: Add your Android SDK tools directory (containing adb) and 
+    `$NDK_DIR/android-ndk-r4/build/prebuilt/linux-x86/arm-eabi-$TOOLCHAIN/bin`
+     to your path. Where $NDK_DIR and $TOOLCHAIN are the values you set in the
+     make file.
+
+     Example: /home/idan/Desktop/AndroidDev/android-ndk-r4/build/prebuilt/linux-x86/arm-eabi-4.4.0/bin
+
+     After doing this you should be able to run both adb and arm-eabi-g++ in 
+     any directory
+
+ 3: Plugin you Android phone/emulator. Verify you can access it via adb. 
+    Note that you can only have one phone or one emulator plugged into your 
+    computer during this process.
+
+ 4: run `make all`. This may take some time.
+
+ 5: run `make check`. This may take some time as well, but will verify that the
+    compilation was successful. Each test will report afterwards if it was
+    successful or not.
+
+    NOTE: `subset` will report a failure while running it through the script. 
+    This is due to the way `adb shell` works. You can manually transfer the file
+    over using `adb push subset $PHONE_TMP` and run it in a shell (`adb shell`)
+    using the following commands:
+         subset 40 40 20 10 999999 f
+         subset 40 40 20 10 999999 q
+
+ 6: run `make install`. 
+    The compiled files will now be in the $DEF_PREFIX directory
+
+################################################################################
+# Compiling programs against NTL:
+################################################################################
+ Using the JNI via the NDK:
+    You will need to create an Android.mk file as if you're writing a standard
+    JNI program.  In LOCAL_CFLAGS and LOCAL_LDLIBS you will need to add in the 
+    include and library directories for NTL and GMP (if you compiled using GMP).
+    You will also need to add in -lntl and -lgmp (if you compiled using gmp)
+
+    Example:
+    LOCAL_CFLAGS:= -O2 -I/home/idan/android/ntl/include -L/home/idan/android/ntl/lib -I/home/idan/android/gmp/include -L/home/idan/android/gmp/lib -lntl -lgmp
+    LOCAL_LDLIBS:= -I/home/idan/android/ntl/include -L/home/idan/android/ntl/lib -I/home/idan/android/gmp/include -L/home/idan/android/gmp/lib -lntl -lgmp -lm -llog
+
+ Compiling a standalone shell application:
+    Use the following compile line:
+
+arm-eabi-g++ -nostdlib -Bdynamic -Wl,-dynamic-linker,/system/bin/linker -Wl,--gc-sections -Wl,-z,nocopyreloc -I$(GMP_DIR)/include -L$(GMP_DIR)/lib -I$(NTL_DIR)/include -L$(NTL_DIR)/lib -I$(NDK_DIR)/build/platforms/android-8/arch-arm/usr/include -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fomit-frame-pointer -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -DANDROID -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -Wa,--noexecstack -march=armv7-a -mfloat-abi=softfp -mfpu=vfp -Wl,-rpath-link=$(NDK_DIR)/build/platforms/android-8/arch-arm/usr/lib -L$(NDK_DIR)/build/platforms/android-8/arch-arm/usr/lib $(NDK_DIR)/build/platforms/android-8/arch-arm/usr/lib/crtbegin_dynamic.o $(NDK_DIR)/build/prebuilt/linux-x86/arm-eabi-4.4.0/lib/gcc/arm-eabi/4.4.0/libgcc.a  $(NDK_DIR)/build/prebuilt/linux-x86/arm-eabi-4.4.0/arm-eabi/lib/libstdc++.a $(NDK_DIR)/build/prebuilt/linux-x86/arm-eabi-4.4.0/arm-eabi/lib/libsupc++.a -lc -lm -o $OUTPUT $INPUT -Wno-deprecated -lgmp -lntl -lsupc++ 
+
+   Where $NDK_DIR is set to your NDK root directory. $NTL_DIR and $GMP_DIR are
+   your NTL and GMP library prefixes and $OUTPUT and $INPUT are set to the 
+   respective input and output files. Note that you might need to play around 
+   with the library order depending on your specific application. 
+   This line should work with most applications.
+
+################################################################################
+# Additional Notes
+################################################################################
+As of r4, there is no support for cerr, cout and cin in the terminal. You will 
+instead need to use printf and/or redirect these buffers to a file.
+

@@ -1,0 +1,21 @@
+src/AndroidRemoveProg
+	Script called to remove a program or file from the Android phone. 
+	Takes in the full path to the file(s)
+src/gen_lip_gmp_aux.c
+	Modified to add /* and */ to anything going to stderr that is not valid source code.
+src/gen_gmp_aux.c
+	Modified to use printf and comment out any output in /* and */ tags that is not going to be used in the generated header file
+src/MakeGetTime
+	Modified to copy and run the application on the phone. Takes in another parameter now ($2) which is the phone's temp directory
+src/subset.c
+	Modified to use printf instead of cout and to have hardcoded values for everything but the last parameter (alg). In the automated test mode the value might not transfer properly. Instead, manually compile and run the test on the phone using adb push and adb shell. 
+src/TestGetTime.c
+	Modified to use printf instead of fprintf. Modified to output the return code to stdout for debugging purposes.
+src/TestScript
+	Modified to copy and run all the test scripts on the android phone. Also copies any necessary input files to the phone and copies any output files back for verification against the known good results.
+src/*Test.c
+	For test scripts that have corresponding input files: modified to read in the input files using an input stream instead of cin. Takes the full directory as one of the arguments.
+	For test scripts that use cout for output and diff to compare it against known good results: modified to output to an output stream file named XXX.
+	For test scripts that just output information: changed all cout references to printf
+src/makefile
+	Changed compile command to one which supports the Android phone and added support to copy/pull the necessary files from the phone. Assumes that the toolchain (arm-eabi-* files) and the adb command are in the PATH variable.

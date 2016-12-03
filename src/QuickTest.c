@@ -80,8 +80,7 @@ void GF2X_time()
       t = GetTime() - t;
    } while (t < 0.5);
 
-   cerr << "time to multiply polynomials over GF(2) \n   of degree < 1000000: "
-        << (t/iter) << "s\n";
+   printf("time to multiply polynomials over GF(2) \n   of degree < 1000000: %fs\n",(t/iter));
 
 #ifdef NTL_GF2X_LIB
    OldMul(c, a, b);
@@ -95,7 +94,7 @@ void GF2X_time()
       t = GetTime() - t;
    } while (t < 0.5);
 
-   cerr << "   **** using old code: "  << (t/iter) << "s\n";
+   printf("   **** using old code: %fs\n",(t/iter));
 #endif
 
 }
@@ -116,171 +115,167 @@ int main()
    SetSeed(ZZ(0));
 
 
-   cerr << "This is NTL version " << NTL_VERSION << "\n"; 
+   printf("This is NTL version %s\n",NTL_VERSION);
 
-   cerr << "Hardware charactersitics:\n";
-   cerr << "NTL_BITS_PER_LONG = " << NTL_BITS_PER_LONG << "\n";
-   cerr << "NTL_ZZ_NBITS = " << NTL_ZZ_NBITS << "\n";
-   cerr << "NTL_SP_NBITS = " << NTL_SP_NBITS << "\n";
+   printf("Hardware charactersitics:\n");
+   printf("NTL_BITS_PER_LONG = %d\n", NTL_BITS_PER_LONG);
+   printf("NTL_ZZ_NBITS = %d\n", NTL_ZZ_NBITS);
+   printf("NTL_SP_NBITS = %d\n", NTL_SP_NBITS);
 
 #ifdef NTL_HAVE_LL_TYPE
-   cerr << "NTL_HAVE_LL_TYPE\n";
+   printf("NTL_HAVE_LL_TYPE\n");
 #endif
 
 #ifdef NTL_LONGDOUBLE_SP_MULMOD
-   cerr << "NTL_LONGDOUBLE_SP_MULMOD\n";
+   printf("NTL_LONGDOUBLE_SP_MULMOD\n");
 #endif
 
 #ifdef NTL_LONGLONG_SP_MULMOD
-   cerr << "NTL_LONGLONG_SP_MULMOD\n";
+   printf("NTL_LONGLONG_SP_MULMOD\n");
 #endif
 
-   cerr << "\n";
+  printf("\n");
 
    
 
 
-   cerr << "Basic Configuration Options:\n";
+	  printf("Basic Configuration Options:\n");
 
 
 
 #ifdef NTL_LEGACY_NO_NAMESPACE
-   cerr << "NTL_LEGACY_NO_NAMESPACE\n";
+	  printf("NTL_LEGACY_NO_NAMESPACE\n");
 #endif
 
 
 #ifdef NTL_LEGACY_INPUT_ERROR
-   cerr << "NTL_LEGACY_INPUT_ERROR\n";
+	  printf("NTL_LEGACY_INPUT_ERROR\n");
 #endif
 
 
 #ifdef NTL_THREADS
-   cerr << "NTL_THREADS\n";
+	  printf("NTL_THREADS\n");
 #endif
 
 
 #ifdef NTL_EXCEPTIONS
-   cerr << "NTL_EXCEPTIONS\n";
+	  printf("NTL_EXCEPTIONS\n");
 #endif
 
 #ifdef NTL_THREAD_BOOST
-   cerr << "NTL_THREAD_BOOST\n";
+	  printf("NTL_THREAD_BOOST\n");
 #endif
 
 
 #ifdef NTL_LEGACY_SP_MULMOD
-   cout << "NTL_LEGACY_SP_MULMOD\n";
+	  printf("NTL_LEGACY_SP_MULMOD\n");
 #endif
 
 
 #ifdef NTL_DISABLE_LONGDOUBLE
-   cout << "NTL_DISABLE_LONGDOUBLE\n";
+	  printf("NTL_DISABLE_LONGDOUBLE\n");
 #endif
 
 
 #ifdef NTL_DISABLE_LONGLONG
-   cout << "NTL_DISABLE_LONGLONG\n";
+	  printf("NTL_DISABLE_LONGLONG\n");
 #endif
 
 #ifdef NTL_MAXIMIZE_SP_NBITS
-   cout << "NTL_MAXIMIZE_SP_NBITS\n";
+	  printf("NTL_MAXIMIZE_SP_NBITS\n");
 #endif
 
 
 
 
 #ifdef NTL_GMP_LIP
-   cerr << "NTL_GMP_LIP\n";
+	  printf("NTL_GMP_LIP\n");
 #endif
 
 
 #ifdef NTL_GF2X_LIB
-   cerr << "NTL_GF2X_LIB\n";
+	  printf("NTL_GF2X_LIB\n");
 #endif
 
 
 #ifdef NTL_PCLMUL
-   cerr << "NTL_PCLMUL\n";
+	  printf("NTL_PCLMUL\n");
 #endif
 
 
 #ifdef NTL_LONG_LONG_TYPE
-   cerr << "NTL_LONG_LONG_TYPE: ";
-   cerr << make_string(NTL_LONG_LONG_TYPE) << "\n";
+   printf("NTL_LONG_LONG_TYPE: %s\n", make_string(NTL_LONG_LONG_TYPE));
 #endif
 
 #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
-   cerr << "NTL_UNSIGNED_LONG_LONG_TYPE: ";
-   cerr << make_string(NTL_UNSIGNED_LONG_LONG_TYPE) << "\n";
+   printf("NTL_UNSIGNED_LONG_LONG_TYPE: %s\n", make_string(NTL_UNSIGNED_LONG_LONG_TYPE));
 #endif
 
 
 #ifdef NTL_X86_FIX
-   cerr << "NTL_X86_FIX\n";
+   printf("NTL_X86_FIX\n");
 #endif
 
 #ifdef NTL_NO_X86_FIX
-   cerr << "NTL_NO_X86_FIX\n";
+   printf("NTL_NO_X86_FIX\n");
 #endif
 
 #ifdef NTL_NO_INIT_TRANS
-   cerr << "NTL_NO_INIT_TRANS\n";
+   printf("NTL_NO_INIT_TRANS\n");
 #endif
 
 #ifdef NTL_CLEAN_INT
-   cerr << "NTL_CLEAN_INT\n";
+   printf("NTL_CLEAN_INT\n");
 #endif
 
 #ifdef NTL_CLEAN_PTR
-   cerr << "NTL_CLEAN_PTR\n";
+   printf("NTL_CLEAN_PTR\n");
 #endif
 
 #ifdef NTL_RANGE_CHECK
-   cerr << "NTL_RANGE_CHECK\n";
+   printf("NTL_RANGE_CHECK\n");
 #endif
 
 
-cerr << "\n";
-cerr << "Resolution of double-word types:\n";
-cerr << make_string(NTL_LL_TYPE) << "\n";
-cerr << make_string(NTL_ULL_TYPE) << "\n";
+   printf("\n");
+   printf("Resolution of double-word types:\n%s\n%s\n", make_string(NTL_LL_TYPE), make_string(NTL_ULL_TYPE));
 
 
-cerr << "\n";
-cerr << "Performance Options:\n";
+   printf("\n");
+   printf("Performance Options:\n");
 
 #ifdef NTL_LONG_LONG
-   cerr << "NTL_LONG_LONG\n";
+   printf("NTL_LONG_LONG\n");
 #endif
 
 #ifdef NTL_AVOID_FLOAT
-   cerr << "NTL_AVOID_FLOAT\n";
+   printf("NTL_AVOID_FLOAT\n");
 #endif
 
 
 #ifdef NTL_SPMM_ULL
-   cerr << "NTL_SPMM_ULL\n";
+   printf("NTL_SPMM_ULL\n");
 #endif
 
 
 #ifdef NTL_SPMM_ASM
-   cerr << "NTL_SPMM_ASM\n";
+   printf("NTL_SPMM_ASM\n");
 #endif
 
 
 
 
 #ifdef NTL_AVOID_BRANCHING
-   cerr << "NTL_AVOID_BRANCHING\n";
+   printf("NTL_AVOID_BRANCHING\n");
 #endif
 
 
 #ifdef NTL_FFT_BIGTAB
-   cout << "NTL_FFT_BIGTAB\n";
+   printf("NTL_FFT_BIGTAB\n");
 #endif
 
 #ifdef NTL_FFT_LAZYMUL
-   cout << "NTL_FFT_LAZYMUL\n";
+   printf("NTL_FFT_LAZYMUL\n");
 #endif
 
 
@@ -288,38 +283,38 @@ cerr << "Performance Options:\n";
 
 
 #ifdef NTL_TBL_REM
-   cerr << "NTL_TBL_REM\n";
+   printf("NTL_TBL_REM\n");
 #endif
 
 
 #ifdef NTL_TBL_REM_LL
-   cerr << "NTL_TBL_REM_LL\n";
+   printf("NTL_TBL_REM_LL\n");
 #endif
 
 #ifdef NTL_CRT_ALTCODE
-   cerr << "NTL_CRT_ALTCODE\n";
+   printf("NTL_CRT_ALTCODE\n");
 #endif
 
 #ifdef NTL_CRT_ALTCODE_SMALL
-   cerr << "NTL_CRT_ALTCODE_SMALL\n";
+   printf("NTL_CRT_ALTCODE_SMALL\n");
 #endif
 
 #ifdef NTL_GF2X_ALTCODE
-   cerr << "NTL_GF2X_ALTCODE\n";
+   printf("NTL_GF2X_ALTCODE\n");
 #endif
 
 #ifdef NTL_GF2X_ALTCODE1
-   cerr << "NTL_GF2X_ALTCODE1\n";
+   printf("NTL_GF2X_ALTCODE1\n");
 #endif
 
 
 #ifdef NTL_GF2X_NOINLINE
-   cerr << "NTL_GF2X_NOINLINE\n";
+   printf("NTL_GF2X_NOINLINE\n");
 #endif
 
-   cerr << "\n\n";
+   printf("\n\n");
 
-   cerr << "running tests";
+   printf("running tests");
 
    long n, k, i;
 
@@ -330,8 +325,8 @@ cerr << "Performance Options:\n";
 
 
    for (i = 0; i < 15; i++) {
-      // cerr << n << "/" << k; 
-      cerr << ".";
+      // printf(n << "/" << k; 
+      printf(".");
       RandomLen(p, k);
       ZZ_p::init(p);  
     
@@ -343,12 +338,12 @@ cerr << "Performance Options:\n";
       random(b, n);
 
       FFTMul(c, a, b);
-      //cerr << ZZ_pInfo->FFTInfo->NumPrimes;
+      //printf(ZZ_pInfo->FFTInfo->NumPrimes;
 
       c1 = conv<ZZ_pX>( KarMul( conv<ZZX>(a), conv<ZZX>(b) ) );
 
       if (c1 != c) {
-         cerr << "ZZ_pX mul failed!\n";
+         printf("ZZ_pX mul failed!\n");
          return 1;
       }
 
@@ -362,24 +357,24 @@ cerr << "Performance Options:\n";
    // we might as well check them here.
 
    if (SmallModulusTest(17, 1000)) {
-      cerr << "first SmallModulusTest failed!!\n";
+      printf("first SmallModulusTest failed!!\n");
       return 1;
    }
 
    if (SmallModulusTest((1L << (NTL_SP_NBITS))-1, 1000)) {
-      cerr << "second SmallModulusTest failed!!\n";
+      printf("second SmallModulusTest failed!!\n");
       return 1;
    }
 
    // Test gf2x code....
 
    if (GF2X_test()) {
-      cerr << "GF2X test failed!\n";
+      printf("GF2X test failed!\n");
       return 1;
    }
    
 
-   cerr << "OK\n";
+   printf("OK\n");
 
    ZZ x1, x2, x3, x4;
    double t;
@@ -395,8 +390,7 @@ cerr << "Performance Options:\n";
       mul(x4, x2, x3);
    t = GetTime()-t;
 
-   cerr << "time for 1024-bit mul: " << t*10 << "us";
-   cerr << "\n";
+   printf("time for 1024-bit mul: %fus\n", t*10);
 
    rem(x2, x4, x1);
 
@@ -405,8 +399,7 @@ cerr << "Performance Options:\n";
       rem(x2, x4, x1);
    t = GetTime()-t;
 
-   cerr << "time for 2048/1024-bit rem: " << t*10 << "us";
-   cerr << "\n";
+   printf("time for 2048/1024-bit rem: %fus\n", t*10);
    
 
    GenPrime(p, 1024);
@@ -420,8 +413,7 @@ cerr << "Performance Options:\n";
       InvMod(x2, x1, p);
    t = GetTime()-t;
 
-   cerr << "time for 1024-bit modular inverse: " << t*1000 << "us";
-   cerr << "\n";
+   printf("time for 1024-bit modular inverse: %fus\n", t*1000);
 
 
 
@@ -445,9 +437,7 @@ cerr << "Performance Options:\n";
    for (i = 0; i < 200; i++) mul(j3, j1, j2);
    t = GetTime()-t;
 
-   cerr << "time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: ";
-   cerr << (t/200) << "s";
-   cerr << "\n";
+   printf("time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: %fs\n",(t/200));
 
    GF2X_time();
 

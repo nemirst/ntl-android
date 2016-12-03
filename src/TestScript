@@ -4,8 +4,12 @@ echo "---------------------------------"
 echo "making CanZassTest"
 make CanZassTest
 echo "running CanZassTest"
-./CanZassTest < CanZassTestIn > XXX
+adb push CanZassTest $1/
+adb push CanZassTestIn $1/
+adb shell $1/CanZassTest "$1/CanZassTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg CanZassTest
+sh AndroidRemoveProg $1/CanZassTest $1/CanZassTestIn
 if diff -b XXX CanZassTestOut
 then
 echo "CanZassTest OK"
@@ -18,8 +22,12 @@ echo "---------------------------------"
 echo "making BerlekampTest"
 make BerlekampTest
 echo "running BerlekampTest"
-./BerlekampTest < BerlekampTestIn > XXX
+adb push BerlekampTest $1/
+adb push BerlekampTestIn $1/
+adb shell $1/BerlekampTest "$1/BerlekampTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg BerlekampTest
+sh AndroidRemoveProg $1/BerlekampTest $1/BerlekampTestIn
 if diff -b XXX BerlekampTestOut
 then
 echo "BerlekampTest OK"
@@ -33,8 +41,12 @@ echo "---------------------------------"
 echo "making ZZXFacTest"
 make ZZXFacTest
 echo "running ZZXFacTest"
-./ZZXFacTest < ZZXFacTestIn > XXX
+adb push ZZXFacTest $1/
+adb push ZZXFacTestIn $1/
+adb shell $1/ZZXFacTest "$1/ZZXFacTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg ZZXFacTest
+sh AndroidRemoveProg $1/ZZXFacTest $1/ZZXFacTestIn
 if diff -b XXX ZZXFacTestOut
 then
 echo "ZZXFacTest OK"
@@ -47,33 +59,43 @@ echo "---------------------------------"
 echo "making MoreFacTest"
 make MoreFacTest
 echo "running MoreFacTest"
-./MoreFacTest < MoreFacTestIn 
+adb push MoreFacTest $1/
+adb push MoreFacTestIn $1/
+adb shell $1/MoreFacTest "$1/MoreFacTestIn" "$1/XXX"
 sh RemoveProg MoreFacTest
+sh AndroidRemoveProg $1/MoreFacTest $1/MoreFacTestIn
 
 echo
 echo "---------------------------------"
 echo "making GF2XTest"
 make GF2XTest
 echo "running GF2XTest"
-./GF2XTest
+adb push GF2XTest $1/
+adb shell $1/GF2XTest
 sh RemoveProg GF2XTest
+sh AndroidRemoveProg $1/GF2XTest
 
 echo
 echo "---------------------------------"
 echo "making GF2EXTest"
 make GF2EXTest
 echo "running GF2EXTest"
-./GF2EXTest
+adb push GF2EXTest $1/
+adb shell $1/GF2EXTest
 sh RemoveProg GF2EXTest
-
+sh AndroidRemoveProg $1/GF2EXTest
 
 echo
 echo "---------------------------------"
 echo "making MatrixTest"
 make MatrixTest
 echo "running MatrixTest"
-./MatrixTest < MatrixTestIn > XXX
+adb push MatrixTest $1/
+adb push MatrixTestIn $1/
+adb shell $1/MatrixTest "$1/MatrixTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg MatrixTest
+sh AndroidRemoveProg $1/MatrixTest $1/MatrixTestIn
 if diff -b XXX MatrixTestOut
 then
 echo "MatrixTest OK"
@@ -86,8 +108,12 @@ echo "---------------------------------"
 echo "making CharPolyTest"
 make CharPolyTest
 echo "running CharPolyTest"
-./CharPolyTest < CharPolyTestIn > XXX
+adb push CharPolyTest $1/
+adb push CharPolyTestIn $1/
+adb shell $1/CharPolyTest "$1/CharPolyTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg CharPolyTest
+sh AndroidRemoveProg $1/CharPolyTest $1/CharPolyTestIn
 if diff -b XXX CharPolyTestOut
 then
 echo "CharPolyTest OK"
@@ -100,8 +126,10 @@ echo "---------------------------------"
 echo "making BitMatTest"
 make BitMatTest
 echo "running BitMatTest"
-./BitMatTest
+adb push BitMatTest $1/
+adb shell $1/BitMatTest
 sh RemoveProg BitMatTest
+sh AndroidRemoveProg $1/BitMatTest
 
 
 echo
@@ -109,8 +137,12 @@ echo "---------------------------------"
 echo "making RRTest"
 make RRTest
 echo "running RRTest"
-./RRTest < RRTestIn > XXX
+adb push RRTest $1/
+adb push RRTestIn $1/
+adb shell $1/RRTest "$1/RRTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg RRTest
+sh AndroidRemoveProg $1/RRTest $1/RRTestIn
 if diff -b XXX RRTestOut
 then
 echo "RRTest OK"
@@ -123,8 +155,12 @@ echo "---------------------------------"
 echo "making QuadTest"
 make QuadTest
 echo "running QuadTest"
-./QuadTest < QuadTestIn > XXX
+adb push QuadTest $1/
+adb push QuadTestIn $1/
+adb shell $1/QuadTest "$1/QuadTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg QuadTest
+sh AndroidRemoveProg $1/QuadTest $1/QuadTestIn
 if diff -b XXX QuadTestOut
 then
 echo "QuadTest OK"
@@ -138,8 +174,12 @@ echo "---------------------------------"
 echo "making LLLTest"
 make LLLTest
 echo "running LLLTest"
-./LLLTest < LLLTestIn > XXX
+adb push LLLTest $1/
+adb push LLLTestIn $1/
+adb shell $1/LLLTest "$1/LLLTestIn" "$1/XXX"
+adb pull $1/XXX
 sh RemoveProg LLLTest
+sh AndroidRemoveProg $1/LLLTest $1/LLLTestIn
 if diff -b XXX LLLTestOut
 then
 echo "LLLTest OK"
@@ -152,15 +192,17 @@ echo "---------------------------------"
 echo "making subset"
 make subset
 echo "subset 40 40 20 10 999999 f"
-./subset <<here
+adb push subset $1/
+adb shell $1/subset <<here
   40 40 20 10 999999 f
 here
 echo "subset 40 40 20 10 999999 q"
-./subset <<here
+adb shell $1/subset <<here
   40 40 20 10 999999 q
 here
 
 sh RemoveProg subset
+sh AndroidRemoveProg $1/subset
 
 
 echo
@@ -168,8 +210,10 @@ echo "---------------------------------"
 echo "making ZZ_pEXTest"
 make ZZ_pEXTest
 echo "running ZZ_pEXTest"
-./ZZ_pEXTest 
+adb push ZZ_pEXTest $1/
+adb shell $1/ZZ_pEXTest 
 sh RemoveProg ZZ_pEXTest
+sh AndroidRemoveProg $1/ZZ_pEXTest
 
 
 echo
@@ -177,8 +221,13 @@ echo "---------------------------------"
 echo "making lzz_pEXTest"
 make lzz_pEXTest
 echo "running lzz_pEXTest"
-./lzz_pEXTest 
+adb push lzz_pEXTest $1/
+adb shell $1/lzz_pEXTest 
 sh RemoveProg lzz_pEXTest
+sh AndroidRemoveProg $1/lzz_pEXTest
+
+sh RemoveProg XXX
+sh AndroidRemoveProg $1/XXX
 
 
 echo
@@ -186,8 +235,10 @@ echo "---------------------------------"
 echo "making ThreadTest"
 make ThreadTest
 echo "running ThreadTest"
-./ThreadTest 
+adb push ThreadTest $1/
+adb shell $1/ThreadTest
 sh RemoveProg ThreadTest
+sh AndroidRemoveProg $1/ThreadTest
 
 echo
 

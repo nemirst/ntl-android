@@ -3,6 +3,10 @@ Release date: 2015.11.13
 
 Author: Victor Shoup (victor@shoup.net)
 
+Modified for Android by Idan Warsawski (idan@bu.edu)
+
+Janis Ozols (cppkonsultants@gmail.com): Updated modifications by Idan Warsawski to NTL version 9.6.2 (from 5.5.2) and to Android NDK 13.
+
 NTL is open-source software distributed under the terms of the
 GNU General Public License.
 See the file doc/copying.txt for complete details on the licensing

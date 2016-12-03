@@ -18,34 +18,33 @@ long SubsetSumSolution(const vec_ZZ& z)
 
 
 
-int main()
+int main(int argc, char** argv)
 {
    RR::SetPrecision(150);
    long n, b, size;
 
-   cerr << "n: ";
-   cin >> n;
+   n = 40;//(long) atoi(argv[1]);
+   printf("n: %i\n", n);
 
-   cerr << "b: ";
-   cin >> b;
+   b = 40;//(long) atoi(argv[2]);
+   printf("b: %i\n", b);
 
-   cerr << "size: ";
-   cin >> size;
+   size = 20;//(long) atoi(argv[3]);
+   printf("size: %i\n", size);
 
-   cerr << "prune: ";
-   long prune;
-   cin >> prune;
+   long prune = 10;//(long) atoi(argv[4]);
+   printf("prune: %i\n", prune);
 
    ZZ seed;
-   cerr << "seed: ";
-   cin >> seed;
+   seed << 999999; /*(long) atoi(argv[5])*/;
+   printf("seed: 999999\n")
 
    if (seed != 0)
       SetSeed(seed);
 
    char alg;
-   cerr << "alg [fqQxr]: ";
-   cin >> alg;
+   alg = *argv[6];
+   printf("alg [fqQxr]: %c\n", alg);
 
    double TotalTime = 0;
    long TotalSucc = 0;
@@ -138,15 +137,15 @@ int main()
       TotalSucc += succ;
 
       if (succ)
-         cerr << "+";
+	printf("+");
       else
-         cerr << "-";
+	printf("-");
    }
 
-   cerr << "\n";
+   printf("\n");
 
-   cerr << "number of success: " << TotalSucc << "\n";
-   cerr << "average time: " << TotalTime/20 << "\n";
+   printf("number of success: %f\n", TotalSucc);
+   printf("average time: %f\n", TotalTime/20);
 
    return 0;
 }

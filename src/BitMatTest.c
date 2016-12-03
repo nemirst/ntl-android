@@ -70,7 +70,7 @@ int main()
 
       long n = RandomBnd(500) + 1;
       long m = RandomBnd(500) + 1;
-      cerr << n << " " << m << "\n";
+      printf("%i %i\n", n, m);
 
       double t;
 
@@ -78,15 +78,17 @@ int main()
 
       t = GetTime();
       kernel(x, a);
-      t = GetTime() - t;  cerr << t << "\n";
+      t = GetTime() - t;
+      printf("%f\n",t);
 
       cvt(A, a);
 
       t = GetTime();
       kernel(X, A);
-      t = GetTime() - t;  cerr << t << "\n";
+      t = GetTime() - t;
+      printf("%f\n",t);
 
-      cerr << x.NumRows() << "\n";
+      printf("%i\n", x.NumRows());
 
       cvt(X1, x);
 
@@ -94,10 +96,10 @@ int main()
 
       if (!IsZero(X*A)) TerminalError("BitMatTest NOT OK!!");
 
-      cerr << "\n";
+      printf("\n");
    }
 
-   cerr << "BitMatTest OK\n";
+   printf("BitMatTest OK\n");
 
 }
 

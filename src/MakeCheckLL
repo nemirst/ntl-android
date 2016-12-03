@@ -4,21 +4,26 @@ echo "Checking for working LL type"
 cp ../include/NTL/have_LL_no.h ../include/NTL/have_LL.h
 
 sh RemoveProg CheckLL
-echo $1 -o CheckLL CheckLL.c CheckLLAux.c $2
-$1 -o CheckLL CheckLL.c CheckLLAux.c $2
+sh AndroidRemoveProg $2/CheckLL
+echo $1 -o CheckLL CheckLL.c CheckLLAux.c
+$1 -o CheckLL CheckLL.c CheckLLAux.c
+
+adb push CheckLL $2/
 
 if test -f CheckLL
 then
-   if ./CheckLL
+   if adb shell $2/CheckLL
    then
       echo "have LL type"
       cp ../include/NTL/have_LL_yes.h ../include/NTL/have_LL.h
       sh RemoveProg CheckLL
+      sh AndroidRemoveProg $2/CheckLL
       exit 0
    fi
 fi
 
 echo "DO NOT have LL type"
 sh RemoveProg CheckLL
+sh AndroidRemoveProg $2/CheckLL
 exit 0
 

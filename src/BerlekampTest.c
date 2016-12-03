@@ -1,5 +1,6 @@
 
 #include <NTL/ZZ_pXFactoring.h>
+#include <fstream>
 
 NTL_CLIENT
 
@@ -37,20 +38,33 @@ void sort(vec_pair_ZZ_pX_long& v)
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
+   std::fstream inFile;
+   std::ofstream outFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+
    ZZ p;
-   cin >> p;
+   inFile >> p;
    ZZ_p::init(p);
    ZZ_pX f;
-   cin >> f;
+
+   inFile >> f;
+   inFile.close();
+   printf("Reading File Done");
+
+   outFile.open (argv[2]);
 
    vec_pair_ZZ_pX_long factors;
 
    double t = GetTime();
    berlekamp(factors, f, 1);
    t = GetTime()-t;
-   cerr << "total time: " << t << "\n";
+   printf("total time: %s\n", t);
 
    ZZ_pX ff;
 
@@ -60,22 +74,23 @@ int main()
 
    sort(factors);
 
-   cerr << "factorization pattern:";
+   printf("factorization pattern:");
    long i;
 
    for (i = 0; i < factors.length(); i++) {
-      cerr << " ";
+      printf(" ");
       long k = factors[i].b;
       if (k > 1)
-         cerr << k << "*";
+	printf("%f*", k);
       cerr << deg(factors[i].a);
    }
 
-   cerr << "\n";
+   printf("\n");
 
 
 
-   cout << factors << "\n";
+   outFile << factors << "\n";
 
+   outFile.close();
    return 0;
 }

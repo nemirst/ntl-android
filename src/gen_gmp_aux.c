@@ -13,7 +13,7 @@ using namespace std;
 
 int main()
 {
-   fprintf(stderr, "NTL_GMP_LIP flag not set\n");
+  //printf(stderr, "NTL_GMP_LIP flag not set\n");
 
    return 0;
 }
@@ -32,14 +32,14 @@ void print2k(FILE *f, long k, long bpl)
    long first;
 
    if (k <= 0) {
-      fprintf(f, "((double) 1.0)");
+      printf("((double) 1.0)");
       return;
    }
 
    m = bpl - 2;
    first = 1;
 
-   fprintf(f, "(");
+   printf("(");
 
    while (k > 0) {
       if (k > m)
@@ -53,19 +53,19 @@ void print2k(FILE *f, long k, long bpl)
       if (first)
          first = 0;
       else
-         fprintf(f, "*");
+         printf("*");
 
-      fprintf(f, "((double)(1L<<%ld))", l);
+      printf("((double)(1L<<%ld))", l);
    }
 
-   fprintf(f, ")");
+   printf(")");
 }
 
 
 
 void Error(const char *s)
 {
-   fprintf(stderr, "%s\n", s);
+   printf("%s\n", s);
    abort();
 }
 
@@ -75,7 +75,7 @@ int main()
    long bpl;
    long ntl_zz_nbits;
 
-   fprintf(stderr, "NTL_GMP_LIP flag set\n");
+   //printf("NTL_GMP_LIP flag set\n");
 
    bpl = NTL_BITS_PER_LONG;
 
@@ -104,10 +104,10 @@ int main()
 
    if (sizeof(mp_size_t) < sizeof(long)) {
       printf("#define NTL_SMALL_MP_SIZE_T\n");
-      fprintf(stderr, "setting NTL_SMALL_MP_SIZE_T\n");
+      printf("/*setting NTL_SMALL_MP_SIZE_T*/\n");
    }
 
-   fprintf(stderr, "NTL_ZZ_NBITS = %ld\n", ntl_zz_nbits);
+   printf("/*NTL_ZZ_NBITS = %ld*/\n", ntl_zz_nbits);
 
    printf("#define NTL_ZZ_NBITS (%ld)\n",  ntl_zz_nbits);
 

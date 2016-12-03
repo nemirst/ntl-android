@@ -1,4 +1,5 @@
 #include <NTL/ZZXFactoring.h>
+#include <fstream>
 
 NTL_CLIENT
 
@@ -16,19 +17,26 @@ long NumFacs(const vec_pair_ZZX_long& v)
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
+   std::fstream inFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+
    long cnt = 0;
-   while (SkipWhiteSpace(cin)) {
+   while (SkipWhiteSpace(inFile)) {
       cnt++;
-      cerr << ".";
+      printf(".");
 
       vec_ZZ w;
       ZZX f1, f;
       long nfacs;
 
-      cin >> w;
-      cin >> nfacs;
+      inFile >> w;
+      inFile >> nfacs;
 
       long i, n;
       n = w.length();
@@ -47,8 +55,8 @@ int main()
       mul(f1, f1, c);
 
       if (f != f1) {
-         cerr << f << "\n";
-         cerr << c << " " << factors << "\n";
+         //printf("%f\n",f);
+         //cerr << c << " " << factors << "\n"; //factors data type doesn't play well with printf...
          TerminalError("FACTORIZATION INCORRECT (1) !!!");
       }
 
@@ -58,9 +66,9 @@ int main()
          TerminalError("FACTORIZATION INCORRECT (2) !!!");
    }
 
-
-   cerr << "\n";
-   cerr << "MoreFacTest OK\n";
+   
+   inFile.close();
+   printf("\nMoreFacTest OK\n");
 
    return 0;
 }

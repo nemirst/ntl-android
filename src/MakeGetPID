@@ -8,8 +8,13 @@ echo "who am I?"
 
 
 sh RemoveProg TestGetPID
-echo $1 -o TestGetPID TestGetPID.c GetPID1.c $2
-$1 -o TestGetPID TestGetPID.c GetPID1.c $2
+# cppkonsultants: i don't think android is necessary here, as program is not run
+# also should check other files used in setup.
+sh AndroidRemoveProg $2/TestGetPID
+echo $1 -o TestGetPID TestGetPID.c GetPID1.c
+$1 -o TestGetPID TestGetPID.c GetPID1.c
+
+adb push TestGetPID $2/
 
 if test -f TestGetPID
 then

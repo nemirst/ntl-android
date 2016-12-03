@@ -22,33 +22,33 @@ sub BadPCLMUL {
 
 %MakeFlag = (
 
-'WIZARD'  => 'on',
+'WIZARD'  => 'off',
 'SHARED'  => 'off',
 
 );
 
 %MakeVal = (
 
-'CXX'	      => 'g++',
+'CXX'	      => 'arm-none-linux-gnueabi-g++',
 'CXXFLAGS'    => '-g -O2',
 'CXXAUTOFLAGS'=> '',
-'AR'	      => 'ar',
+'AR'	      => 'arm-none-linux-gnueabi-ar',
 'ARFLAGS'     => 'ruv',
-'RANLIB'      => 'ranlib',
+'RANLIB'      => 'arm-none-linux-gnueabi-ranlib',
 'LIBTOOL'     => 'libtool',
 
 'LDFLAGS'     => '',
 'LDLIBS'      => '-lm',
 'CPPFLAGS'    => '',
 
-'DEF_PREFIX'  => '/usr/local',
+'DEF_PREFIX'  => '/home/cppko/ntl_android_build',
 
 'PREFIX'      => '$(DEF_PREFIX)',
 'LIBDIR'      => '$(PREFIX)/lib',
 'INCLUDEDIR'  => '$(PREFIX)/include',
 'DOCDIR'      => '$(PREFIX)/share/doc',
 
-'GMP_PREFIX'  => '$(DEF_PREFIX)',
+'GMP_PREFIX'  => '$(DEF_PREFIX)/gmp',
 'GMP_INCDIR'  => '$(GMP_PREFIX)/include',
 'GMP_LIBDIR'  => '$(GMP_PREFIX)/lib',
 

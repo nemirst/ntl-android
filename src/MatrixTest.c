@@ -2,57 +2,69 @@
 #include <NTL/mat_ZZ.h>
 #include <NTL/mat_poly_ZZ.h>
 #include <NTL/HNF.h>
+#include <fstream>
 
 NTL_CLIENT
 
-int main()
+int main(int argc, char** argv)
 {
+   std::fstream inFile;
+   std::ofstream outFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+
    mat_ZZ B, X;
    vec_ZZ v, w;
 
-   cin >> B;
-   cin >> v;
+   inFile >> B;
+   inFile >> v;
 
    ZZ d;
 
+   outFile.open(argv[2]);
+
    double t;
-   cerr << "matrix inverse...";
+   printf("matrix inverse...");
    t = GetTime();
    inv(d, X, B);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
 
-   cout << d << "\n";
-   cout << X << "\n";
+   outFile << d << "\n";
+   outFile << X << "\n";
 
-   cout << "\n\n\n";
+   outFile << "\n\n\n";
 
-   cerr << "hensel solve...";
+   printf("hensel solve...");
    t = GetTime();
    HenselSolve1(d, w, B, v);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
 
-   cout << d << "\n";
-   cout << w << "\n";
+   outFile << d << "\n";
+   outFile << w << "\n";
 
-   cout << "\n\n\n";
+   outFile << "\n\n\n";
 
    ZZX f;
 
-   cerr << "char poly...";
+   printf("char poly...");
    t = GetTime();
    CharPoly(f, B);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
 
-   cout << f << "\n";
+   outFile << f << "\n";
 
-   cout << "\n\n\n";
+   outFile << "\n\n\n";
 
-   cerr << "HNF...";
+   printf("HNF...");
    t = GetTime();
    HNF(X, B, d);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
 
-   cout << X;
+   outFile << X;
 
+   outFile.close();
    return 0;
 }

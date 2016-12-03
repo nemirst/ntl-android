@@ -33,7 +33,7 @@ int main()
    long j;
    for (j = 0; j < 5; j++) {
       long n = RandomBnd(40)+10;
-      cerr << n << " ";
+      printf("%i ",n);
 
       random(f, n);
       SetCoeff(f, n);
@@ -41,7 +41,7 @@ int main()
       v = CanZass(f);
 
       g = mul(v);
-      if (f != g) cerr << "oops1\n";
+      if (f != g) printf("oops1\n");
 
       long i;
       for (i = 0; i < v.length(); i++)
@@ -51,7 +51,7 @@ int main()
 
    }
 
-   cerr << "\n";
+   printf("\n");
 
-   cerr << "ZZ_pEXTest OK\n";
+   printf("ZZ_pEXTest OK\n");
 }

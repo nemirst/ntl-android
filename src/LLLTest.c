@@ -1,28 +1,38 @@
 
 #include <NTL/LLL.h>
-
+#include <fstream>
 NTL_CLIENT
 
-int main()
+int main(int argc, char** argv)
 {
+   std::fstream inFile;
+   std::ofstream outFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+   outFile.open(argv[2]);
+
    mat_ZZ B;
    long s;
 
 #if 1
-   cin >> B;
+   inFile >> B;
 #else
    long i, j;
    long n;
-   cerr << "n: ";
-   cin >> n;
+   printf("n: ");
+   inFile >> n;
 
    long m;
-   cerr << "m: ";
-   cin >> m;
+   printf("m: ");
+   inFile >> m;
 
    long k;
-   cerr << "k: ";
-   cin >> k;
+   printf("k: ");
+   inFile >> k;
+   inFile.close();
 
    B.SetDims(n, m);
    for (i = 1; i <= n; i++)
@@ -42,20 +52,20 @@ int main()
    ZZ d;
 
    B = B0;
-   cerr << "LLL_FP...";
+   printf("LLL_FP...");
    t = GetTime();
    s = LLL_FP(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "LLL_QP...";
+   printf("LLL_QP...");
    t = GetTime();
    s = LLL_QP(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
@@ -63,60 +73,60 @@ int main()
 
 
    B = B0;
-   cerr << "LLL_XD...";
+   printf("LLL_XD...");
    t = GetTime();
    s = LLL_XD(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "LLL_RR...";
+   printf("LLL_RR...");
    t = GetTime();
    s = LLL_RR(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "G_LLL_FP...";
+   printf("G_LLL_FP...");
    t = GetTime();
    s = G_LLL_FP(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "G_LLL_QP...";
+   printf("G_LLL_QP...");
    t = GetTime();
    s = G_LLL_QP(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "G_LLL_XD...";
+   printf("G_LLL_XD...");
    t = GetTime();
    s = G_LLL_XD(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
    if (B1 != B) TerminalError("bad LLLTest (2)");
 
    B = B0;
-   cerr << "G_LLL_RR...";
+   printf("G_LLL_RR...");
    t = GetTime();
    s = G_LLL_RR(B, U, 0.99);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
    LLL(d, B, 90, 100);
@@ -124,16 +134,18 @@ int main()
 
 
    B = B0;
-   cerr << "LLL...";
+   printf("LLL...");
    t = GetTime();
    s = LLL(d, B, U);
-   cerr << (GetTime()-t) << "\n";
+   printf("%f\n",(GetTime()-t));
    mul(B1, U, B0);
    if (B1 != B) TerminalError("bad LLLTest (1)");
 
-   cout << "rank = " << s << "\n";
-   cout << "det = " << d << "\n";
-   cout << "B = " << B << "\n";
-   cout << "U = " << U << "\n";
+   outFile << "rank = " << s << "\n";
+   outFile << "det = " << d << "\n";
+   outFile << "B = " << B << "\n";
+   outFile << "U = " << U << "\n";
+   outFile.close();
+   return 0;
 }
 

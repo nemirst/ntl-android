@@ -1,5 +1,5 @@
 #include <NTL/ZZXFactoring.h>
-
+#inclde <fstream>
 NTL_CLIENT
 
 
@@ -40,12 +40,24 @@ void sort(vec_pair_ZZX_long& v)
 
 int main(int argc, char **argv)
 {
+   std::fstream inFile;
+   std::ofstream outFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+
    ZZX f1, f;
 
-   if (argc > 1) 
-      ZZXFac_MaxPrune = atoi(argv[1]);
+   if (argc > 2) 
+      ZZXFac_MaxPrune = atoi(argv[2]);
 
-   cin >> f;
+   inFile >> f;
+   inFile.close();
+   printf("Reading File Done");
+
+   outFile.open (argv[2]);
 
    vec_pair_ZZX_long factors;
    ZZ c;
@@ -56,7 +68,7 @@ int main(int argc, char **argv)
    factor(c, factors, f, 0);
    t = GetTime()-t;
 
-   cerr << "total time: " << t << "\n";
+   printf("total time: %f\n", t );
 
 
    mul(f1, factors);
@@ -69,8 +81,8 @@ int main(int argc, char **argv)
 
    sort(factors);
 
-   cout << c << "\n";
-   cout << factors << "\n";
+   outFile << c << "\n";
+   outFile << factors << "\n";
 
    return 0;
 }

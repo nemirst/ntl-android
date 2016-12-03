@@ -1,58 +1,69 @@
 
 #include <NTL/quad_float.h>
+#include <fstream>
 
 NTL_CLIENT
 
-int main()
+int main(int argc, char** argv)
 {
+   std::fstream inFile;
+   std::ofstream outFile;
+   inFile.open(argv[1]);
+   if (!inFile) {
+       printf("cannot read file");
+       exit(1);
+   }
+   outFile.open(argv[2]);
+
    quad_float a, b, c, d;
 
    quad_float::SetOutputPrecision(25);
 
    if (PrecisionOK())
-      cout << "Precision OK\n";
+      outFile << "Precision OK\n";
    else
-      cout << "Precision not OK\n";
+      outFile << "Precision not OK\n";
 
 
-   cin >> a;
-   cout << a << "\n";
+   inFile >> a;
+   outFile << a << "\n";
 
-   cin >> b;
-   cout << b << "\n";
+   inFile >> b;
+   outFile << b << "\n";
+   inFile.close();
 
    c = a + b;
    d = a;
    d += b;
-   cout << c << "\n";
-   cout << d << "\n";
+   outFile << c << "\n";
+   outFile << d << "\n";
 
    c = a - b;
    d = a;
    d -= b;
-   cout << c << "\n";
-   cout << d << "\n";
+   outFile << c << "\n";
+   outFile << d << "\n";
 
    c = a * b;
    d = a;
    d *= b;
-   cout << c << "\n";
-   cout << d << "\n";
+   outFile << c << "\n";
+   outFile << d << "\n";
 
    c = a / b;
    d = a;
    d /= b;
-   cout << c << "\n";
-   cout << d << "\n";
+   outFile << c << "\n";
+   outFile << d << "\n";
 
    c = -a;
-   cout << c << "\n";
+   outFile << c << "\n";
 
    c = sqrt(a);
-   cout << c << "\n";
+   outFile << c << "\n";
 
    power(c, to_quad_float(10), 20);
-   cout << c << "\n";
+   outFile << c << "\n";
 
    {
 
@@ -64,18 +75,18 @@ int main()
    n1 = to_long(c);
 
    if (n1 == n)
-      cout << "long conversion OK\n";
+      outFile << "long conversion OK\n";
    else
-      cout << "long conversion not OK\n";
+      outFile << "long conversion not OK\n";
 
    n = to_long(1UL << (shamt-1));
    c = to_quad_float(n);
    n1 = to_long(c);
 
    if (n1 == n)
-      cout << "long conversion OK\n";
+      outFile << "long conversion OK\n";
    else
-      cout << "long conversion not OK\n";
+      outFile << "long conversion not OK\n";
 
    }
 
@@ -90,19 +101,19 @@ int main()
    n1 = to_ZZ(c);
 
    if (n1 == to_ZZ(n))
-      cout << "ulong conversion OK\n";
+      outFile << "ulong conversion OK\n";
    else
-      cout << "ulong conversion not OK\n";
+      outFile << "ulong conversion not OK\n";
 
    n = 1UL << (shamt-1);
    c = to_quad_float(n);
    n1 = to_ZZ(c);
 
    if (n1 == to_ZZ(n))
-      cout << "ulong conversion OK\n";
+      outFile << "ulong conversion OK\n";
    else
-      cout << "ulong conversion not OK\n";
+      outFile << "ulong conversion not OK\n";
 
    }
-
+   outFile.close();
 }

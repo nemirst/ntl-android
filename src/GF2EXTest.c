@@ -42,30 +42,30 @@ int main()
 
    CanZass(u, f, 1);
 
-   cerr << "factorization pattern:";
+   printf("factorization pattern:");
    long i;
 
    for (i = 0; i < u.length(); i++) {
-      cerr << " ";
+     printf(" ");
       long k = u[i].b;
       if (k > 1)
-         cerr << k << "*";
-      cerr << deg(u[i].a);
+         printf("%f*",k);
+      printf("%i",deg(u[i].a));
    }
 
-   cerr << "\n\n\n";
+   printf("\n\n\n");
 
    GF2EX ff;
    mul(ff, u);
 
    if (f != ff || u.length() != 11) {
-      cerr << "GF2EXTest NOT OK\n";
+     printf("GF2EXTest NOT OK\n");
       return 1;
    }
 
    {
 
-   cerr << "multiplication test...\n";
+     printf("multiplication test...\n");
 
    BuildIrred(p, 512);
    GF2E::init(p);
@@ -82,15 +82,15 @@ int main()
    t = GetTime();
    for (i = 0; i < 10; i++) PlainMul(C, A, B);
    t = GetTime() - t;
-   cerr << "time for plain mul of degree 511 over GF(2^512): " << (t/10) << "s\n";
+   printf("time for plain mul of degree 511 over GF(2^512): %fs\n", (t/10));
 
    t = GetTime();
    for (i = 0; i < 10; i++) mul(C1, A, B);
    t = GetTime() - t;
-   cerr << "time for karatsuba mul of degree 511 over GF(2^512): " << (t/10) << "s\n";
+   printf("time for karatsuba mul of degree 511 over GF(2^512): %fs\n", (t/10));
 
    if (C != C1) {
-      cerr << "GF2EXTest NOT OK\n";
+     printf("GF2EXTest NOT OK\n");
       return 1;
    }
 
@@ -98,7 +98,7 @@ int main()
 
    {
 
-   cerr << "multiplication test...\n";
+   printf("multiplication test...\n");
 
    BuildIrred(p, 16);
    GF2E::init(p);
@@ -114,20 +114,20 @@ int main()
    t = GetTime();
    for (i = 0; i < 10; i++) PlainMul(C, A, B);
    t = GetTime() - t;
-   cerr << "time for plain mul of degree 511 over GF(2^16): " << (t/10) << "s\n";
+   printf("time for plain mul of degree 511 over GF(2^16): %fs\n",(t/10));
 
    t = GetTime();
    for (i = 0; i < 10; i++) mul(C1, A, B);
    t = GetTime() - t;
-   cerr << "time for karatsuba mul of degree 511 over GF(2^16): " << (t/10) << "s\n";
+   printf("time for karatsuba mul of degree 511 over GF(2^16): %fs\n",(t/10));
 
    if (C != C1) {
-      cerr << "GF2EXTest NOT OK\n";
+     printf("GF2EXTest NOT OK\n");
       return 1;
    }
 
    }
 
-   cerr << "GF2EXTest OK\n";
+   printf("GF2EXTest OK\n");
    return 0;
 }

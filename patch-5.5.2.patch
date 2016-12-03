@@ -1,0 +1,3610 @@
+diff -crB ../ntl-5.5.2/include/NTL/config.h ./include/NTL/config.h
+*** ../ntl-5.5.2/include/NTL/config.h	2009-08-14 08:53:13.000000000 -0400
+--- ./include/NTL/config.h	2010-07-12 17:18:49.000000000 -0400
+***************
+*** 117,123 ****
+  #endif
+  
+  
+! #if 0
+  #define NTL_GMP_LIP
+  
+  /* 
+--- 117,123 ----
+  #endif
+  
+  
+! #if 1
+  #define NTL_GMP_LIP
+  
+  /* 
+Only in .: NOTES
+Only in .: patch.patch
+Only in ./src: AndroidRemoveProg
+diff -crB ../ntl-5.5.2/src/BerlekampTest.c ./src/BerlekampTest.c
+*** ../ntl-5.5.2/src/BerlekampTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/BerlekampTest.c	2010-07-19 11:49:28.000000000 -0400
+***************
+*** 1,5 ****
+--- 1,6 ----
+  
+  #include <NTL/ZZ_pXFactoring.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+***************
+*** 37,56 ****
+  }
+  
+  
+! int main()
+  {
+     ZZ p;
+!    cin >> p;
+     ZZ_p::init(p);
+     ZZ_pX f;
+!    cin >> f;
+  
+     vec_pair_ZZ_pX_long factors;
+  
+     double t = GetTime();
+     berlekamp(factors, f, 1);
+     t = GetTime()-t;
+!    cerr << "total time: " << t << "\n";
+  
+     ZZ_pX ff;
+  
+--- 38,70 ----
+  }
+  
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++ 
+     ZZ p;
+!    inFile >> p;
+     ZZ_p::init(p);
+     ZZ_pX f;
+! 
+!    inFile >> f;
+!    inFile.close();
+!    printf("Reading File Done");
+! 
+!    outFile.open (argv[2]);
+  
+     vec_pair_ZZ_pX_long factors;
+  
+     double t = GetTime();
+     berlekamp(factors, f, 1);
+     t = GetTime()-t;
+!    printf("total time: %f\n",t);
+  
+     ZZ_pX ff;
+  
+***************
+*** 60,81 ****
+  
+     sort(factors);
+  
+!    cerr << "factorization pattern:";
+     long i;
+  
+     for (i = 0; i < factors.length(); i++) {
+!       cerr << " ";
+        long k = factors[i].b;
+        if (k > 1)
+!          cerr << k << "*";
+        cerr << deg(factors[i].a);
+     }
+  
+!    cerr << "\n";
+  
+  
+  
+!    cout << factors << "\n";
+  
+     return 0;
+  }
+--- 74,96 ----
+  
+     sort(factors);
+  
+!    printf("factorization pattern:");
+     long i;
+  
+     for (i = 0; i < factors.length(); i++) {
+!       printf(" ");
+        long k = factors[i].b;
+        if (k > 1)
+!          printf("%f*",k);
+        cerr << deg(factors[i].a);
+     }
+  
+!    printf("\n");
+  
+  
+  
+!    outFile << factors << "\n";
+  
++    outFile.close();
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/BitMatTest.c ./src/BitMatTest.c
+*** ../ntl-5.5.2/src/BitMatTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/BitMatTest.c	2010-07-16 17:55:44.000000000 -0400
+***************
+*** 70,76 ****
+  
+        long n = RandomBnd(500) + 1;
+        long m = RandomBnd(500) + 1;
+!       cerr << n << " " << m << "\n";
+  
+        double t;
+  
+--- 70,76 ----
+  
+        long n = RandomBnd(500) + 1;
+        long m = RandomBnd(500) + 1;
+!       printf("%i %i\n",n,m);
+  
+        double t;
+  
+***************
+*** 78,92 ****
+  
+        t = GetTime();
+        kernel(x, a);
+!       t = GetTime() - t;  cerr << t << "\n";
+  
+        cvt(A, a);
+  
+        t = GetTime();
+        kernel(X, A);
+!       t = GetTime() - t;  cerr << t << "\n";
+  
+!       cerr << x.NumRows() << "\n";
+  
+        cvt(X1, x);
+  
+--- 78,94 ----
+  
+        t = GetTime();
+        kernel(x, a);
+!       t = GetTime() - t;  
+!       printf("%f\n",t);
+  
+        cvt(A, a);
+  
+        t = GetTime();
+        kernel(X, A);
+!       t = GetTime() - t;
+!       printf("%f\n",t);
+  
+!       printf("%i\n", x.NumRows());
+  
+        cvt(X1, x);
+  
+***************
+*** 94,103 ****
+  
+        if (!IsZero(X*A)) Error("BitMatTest NOT OK!!");
+  
+!       cerr << "\n";
+     }
+  
+!    cerr << "BitMatTest OK\n";
+  
+  }
+  
+--- 96,105 ----
+  
+        if (!IsZero(X*A)) Error("BitMatTest NOT OK!!");
+  
+!       printf("\n");
+     }
+  
+!    printf("BitMatTest OK\n");
+  
+  }
+  
+diff -crB ../ntl-5.5.2/src/CanZassTest.c ./src/CanZassTest.c
+*** ../ntl-5.5.2/src/CanZassTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/CanZassTest.c	2010-07-19 11:48:54.000000000 -0400
+***************
+*** 1,5 ****
+--- 1,6 ----
+  
+  #include <NTL/ZZ_pXFactoring.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+***************
+*** 37,56 ****
+  }
+  
+  
+! int main()
+  {
+     ZZ p;
+!    cin >> p;
+     ZZ_p::init(p);
+     ZZ_pX f;
+!    cin >> f;
+  
+     vec_pair_ZZ_pX_long factors;
+  
+     double t = GetTime();
+     CanZass(factors, f, 1);
+     t = GetTime()-t;
+!    cerr << "total time: " << t << "\n";
+  
+     ZZ_pX ff;
+  
+--- 38,70 ----
+  }
+  
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);/*"CanZassTestIn");*/
++    if (!inFile) {
++        printf("cannot read file CanZassTestIn");
++        exit(1);
++    }
++ 
+     ZZ p;
+!    inFile >> p;
+     ZZ_p::init(p);
+     ZZ_pX f;
+! 
+!    inFile >> f;
+!    inFile.close();
+!    printf("Reading File Done");
+! 
+!    outFile.open (argv[2]);
+  
+     vec_pair_ZZ_pX_long factors;
+  
+     double t = GetTime();
+     CanZass(factors, f, 1);
+     t = GetTime()-t;
+!    printf("total time: %f\n", t);
+  
+     ZZ_pX ff;
+  
+***************
+*** 60,80 ****
+  
+     sort(factors);
+  
+!    cerr << "factorization pattern:";
+     long i;
+  
+     for (i = 0; i < factors.length(); i++) {
+!       cerr << " ";
+        long k = factors[i].b;
+        if (k > 1)
+!          cerr << k << "*";
+!       cerr << deg(factors[i].a);
+     }
+  
+!    cerr << "\n";
+   
+  
+!    cout << factors << "\n";
+  
+     return 0;
+  }
+--- 74,95 ----
+  
+     sort(factors);
+  
+!    printf("factorization pattern:");
+     long i;
+  
+     for (i = 0; i < factors.length(); i++) {
+!       printf(" ");
+        long k = factors[i].b;
+        if (k > 1)
+!          printf("%f*",k);
+!       printf("%f",deg(factors[i].a));
+     }
+  
+!    printf("\n");
+   
+  
+!    outFile << factors << "\n";
+!    outFile.close();
+  
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/CharPolyTest.c ./src/CharPolyTest.c
+*** ../ntl-5.5.2/src/CharPolyTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/CharPolyTest.c	2010-07-19 11:50:44.000000000 -0400
+***************
+*** 1,19 ****
+  
+  #include <NTL/ZZX.h>
+  
+  NTL_CLIENT
+  
+! int main()
+  {
+     ZZX a, f, g;
+  
+!    cin >> a;
+!    cin >> f;
+  
+     double t = GetTime();;
+     CharPolyMod(g, a, f);
+!    cerr << GetTime()-t << "\n";
+  
+!    cout << g << "\n";
+     return 0;
+  }
+--- 1,29 ----
+  
+  #include <NTL/ZZX.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++    outFile.open(argv[2]);
+     ZZX a, f, g;
+  
+!    inFile >> a;
+!    inFile >> f;
+  
+     double t = GetTime();;
+     CharPolyMod(g, a, f);
+!    printf("%f\n",GetTime()-t);
+  
+!    outFile << g << "\n";
+!    outFile.close();
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/DoConfig ./src/DoConfig
+*** ../ntl-5.5.2/src/DoConfig	2009-08-14 08:53:11.000000000 -0400
+--- ./src/DoConfig	2010-08-02 11:12:02.000000000 -0400
+***************
+*** 5,24 ****
+  
+  %MakeFlag = (
+  
+! 'WIZARD'  => 'on',
+  'SHARED'  => 'off',
+  
+  );
+  
+  %MakeVal = (
+  
+! 'CC'	      => 'gcc',
+! 'CXX'	      => 'g++',
+  'CFLAGS'      => '-O2',
+  'CXXFLAGS'    => '$(CFLAGS)',
+! 'AR'	      => 'ar',
+  'ARFLAGS'     => 'ruv',
+! 'RANLIB'      => 'ranlib',
+  'LIBTOOL'     => 'libtool',
+  
+  'LDFLAGS'     => '',
+--- 5,24 ----
+  
+  %MakeFlag = (
+  
+! 'WIZARD'  => 'off',
+  'SHARED'  => 'off',
+  
+  );
+  
+  %MakeVal = (
+  
+! 'CC'	      => 'arm-none-linux-gnueabi-gcc',
+! 'CXX'	      => 'arm-none-linux-gnueabi-g++',
+  'CFLAGS'      => '-O2',
+  'CXXFLAGS'    => '$(CFLAGS)',
+! 'AR'	      => 'arm-none-linux-gnueabi-ar',
+  'ARFLAGS'     => 'ruv',
+! 'RANLIB'      => 'arm-none-linux-gnueabi-ranlib',
+  'LIBTOOL'     => 'libtool',
+  
+  'LDFLAGS'     => '',
+***************
+*** 27,40 ****
+  'LDLIBS_CXX'  => '$(LDLIBS)',
+  'CPPFLAGS'    => '',
+  
+! 'DEF_PREFIX'  => '/usr/local',
+  
+  'PREFIX'      => '$(DEF_PREFIX)',
+  'LIBDIR'      => '$(PREFIX)/lib',
+  'INCLUDEDIR'  => '$(PREFIX)/include',
+  'DOCDIR'      => '$(PREFIX)/share/doc',
+  
+! 'GMP_PREFIX'  => '$(DEF_PREFIX)',
+  'GMP_INCDIR'  => '$(GMP_PREFIX)/include',
+  'GMP_LIBDIR'  => '$(GMP_PREFIX)/lib',
+  
+--- 27,40 ----
+  'LDLIBS_CXX'  => '$(LDLIBS)',
+  'CPPFLAGS'    => '',
+  
+! 'DEF_PREFIX'  => '/home/idan/Desktop/lib/',
+  
+  'PREFIX'      => '$(DEF_PREFIX)',
+  'LIBDIR'      => '$(PREFIX)/lib',
+  'INCLUDEDIR'  => '$(PREFIX)/include',
+  'DOCDIR'      => '$(PREFIX)/share/doc',
+  
+! 'GMP_PREFIX'  => '/home/idan/Desktop/lib/gmp/',
+  'GMP_INCDIR'  => '$(GMP_PREFIX)/include',
+  'GMP_LIBDIR'  => '$(GMP_PREFIX)/lib',
+  
+diff -crB ../ntl-5.5.2/src/gen_gmp_aux.c ./src/gen_gmp_aux.c
+*** ../ntl-5.5.2/src/gen_gmp_aux.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/gen_gmp_aux.c	2010-07-23 13:36:05.000000000 -0400
+***************
+*** 11,17 ****
+  
+  int main()
+  {
+!    fprintf(stderr, "NTL_GMP_LIP flag not set\n");
+  
+     return 0;
+  }
+--- 11,17 ----
+  
+  int main()
+  {
+!    //printf("NTL_GMP_LIP flag not set\n");
+  
+     return 0;
+  }
+***************
+*** 30,36 ****
+     long first;
+  
+     if (k <= 0) {
+!       fprintf(f, "((double) 1.0)");
+        return;
+     }
+  
+--- 30,36 ----
+     long first;
+  
+     if (k <= 0) {
+!       printf("((double) 1.0)");
+        return;
+     }
+  
+***************
+*** 51,67 ****
+        if (first)
+           first = 0;
+        else
+!          fprintf(f, "*");
+  
+!       fprintf(f, "((double)(1L<<%ld))", l);
+     }
+  
+!    fprintf(f, ")");
+  }
+  
+  void Error(const char *s)
+  {
+!    fprintf(stderr, "%s\n", s);
+     abort();
+  }
+  
+--- 51,67 ----
+        if (first)
+           first = 0;
+        else
+!          printf("*");
+  
+!       printf("((double)(1L<<%ld))", l);
+     }
+  
+!    printf(")");
+  }
+  
+  void Error(const char *s)
+  {
+!    printf("%s\n", s);
+     abort();
+  }
+  
+***************
+*** 71,77 ****
+     long bpl;
+     long ntl_zz_nbits, ntl_wsp_nbits, ntl_sp_nbits;
+  
+!    fprintf(stderr, "NTL_GMP_LIP flag set\n");
+  
+     bpl = NTL_BITS_PER_LONG;
+  
+--- 71,77 ----
+     long bpl;
+     long ntl_zz_nbits, ntl_wsp_nbits, ntl_sp_nbits;
+  
+!   // printf("NTL_GMP_LIP flag set\n");
+  
+     bpl = NTL_BITS_PER_LONG;
+  
+***************
+*** 103,114 ****
+  
+     if (sizeof(mp_size_t) < sizeof(long)) {
+        printf("#define NTL_SMALL_MP_SIZE_T\n");
+!       fprintf(stderr, "setting NTL_SMALL_MP_SIZE_T\n");
+     }
+  
+!    fprintf(stderr, "NTL_ZZ_NBITS = %ld\n", ntl_zz_nbits);
+!    fprintf(stderr, "NTL_WSP_NBITS = %ld\n", ntl_wsp_nbits);
+!    fprintf(stderr, "NTL_SP_NBITS = %ld\n", ntl_sp_nbits);
+  
+     printf("#define NTL_ZZ_NBITS (%ld)\n",  ntl_zz_nbits);
+  
+--- 103,114 ----
+  
+     if (sizeof(mp_size_t) < sizeof(long)) {
+        printf("#define NTL_SMALL_MP_SIZE_T\n");
+!       printf("/*setting NTL_SMALL_MP_SIZE_T*/\n");
+     }
+  
+!    printf("/*NTL_ZZ_NBITS = %ld*/\n", ntl_zz_nbits);
+!    printf("/*NTL_WSP_NBITS = %ld*/\n", ntl_wsp_nbits);
+!    printf("/*NTL_SP_NBITS = %ld*/\n", ntl_sp_nbits);
+  
+     printf("#define NTL_ZZ_NBITS (%ld)\n",  ntl_zz_nbits);
+  
+diff -crB ../ntl-5.5.2/src/gen_lip_gmp_aux.c ./src/gen_lip_gmp_aux.c
+*** ../ntl-5.5.2/src/gen_lip_gmp_aux.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/gen_lip_gmp_aux.c	2010-07-23 13:34:45.000000000 -0400
+***************
+*** 428,434 ****
+  
+  void Error(const char *s)
+  {
+!    fprintf(stderr, "%s\n", s);
+     abort();
+  }
+  
+--- 428,434 ----
+  
+  void Error(const char *s)
+  {
+!    fprintf(stderr, "/*%s*/\n", s);
+     abort();
+  }
+  
+***************
+*** 497,504 ****
+  
+     BPL = NTL_BITS_PER_LONG;
+  
+!    fprintf(stderr, "\ngmp looks OK...%d, %d, %d, %d.\n", A, B, BPI, BPL);
+!    fprintf(stderr, "generating file lip_gmp_aux.c.\n");
+  
+  
+     lip_to_gmp(A, B);
+--- 497,504 ----
+  
+     BPL = NTL_BITS_PER_LONG;
+  
+!    fprintf(stderr, "/*\ngmp looks OK...%d, %d, %d, %d.*/\n", A, B, BPI, BPL);
+!    fprintf(stderr, "/*generating file lip_gmp_aux.c.*/\n");
+  
+  
+     lip_to_gmp(A, B);
+***************
+*** 522,528 ****
+  
+  int main()
+  {
+!    fprintf(stderr, "NTL_GMP_HACK flag not set.\n");
+     return 0;
+  }
+  
+--- 522,528 ----
+  
+  int main()
+  {
+!    fprintf(stderr, "/*NTL_GMP_HACK flag not set.*/\n");
+     return 0;
+  }
+  
+diff -crB ../ntl-5.5.2/src/GF2EXTest.c ./src/GF2EXTest.c
+*** ../ntl-5.5.2/src/GF2EXTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/GF2EXTest.c	2010-07-16 17:51:25.000000000 -0400
+***************
+*** 42,71 ****
+  
+     CanZass(u, f, 1);
+  
+!    cerr << "factorization pattern:";
+     long i;
+  
+     for (i = 0; i < u.length(); i++) {
+!       cerr << " ";
+        long k = u[i].b;
+        if (k > 1)
+!          cerr << k << "*";
+!       cerr << deg(u[i].a);
+     }
+  
+!    cerr << "\n\n\n";
+  
+     GF2EX ff;
+     mul(ff, u);
+  
+     if (f != ff || u.length() != 11) {
+!       cerr << "GF2EXTest NOT OK\n";
+        return 1;
+     }
+  
+     {
+  
+!    cerr << "multiplication test...\n";
+  
+     BuildIrred(p, 512);
+     GF2E::init(p);
+--- 42,71 ----
+  
+     CanZass(u, f, 1);
+  
+!    printf("factorization pattern:");
+     long i;
+  
+     for (i = 0; i < u.length(); i++) {
+!       printf(" ");
+        long k = u[i].b;
+        if (k > 1)
+!          printf("%f*",k);
+!       printf("%i",deg(u[i].a));
+     }
+  
+!    printf("\n\n\n");
+  
+     GF2EX ff;
+     mul(ff, u);
+  
+     if (f != ff || u.length() != 11) {
+!       printf("GF2EXTest NOT OK\n");
+        return 1;
+     }
+  
+     {
+  
+!    printf("multiplication test...\n");
+  
+     BuildIrred(p, 512);
+     GF2E::init(p);
+***************
+*** 82,96 ****
+     t = GetTime();
+     for (i = 0; i < 10; i++) PlainMul(C, A, B);
+     t = GetTime() - t;
+!    cerr << "time for plain mul of degree 511 over GF(2^512): " << (t/10) << "s\n";
+  
+     t = GetTime();
+     for (i = 0; i < 10; i++) mul(C1, A, B);
+     t = GetTime() - t;
+!    cerr << "time for karatsuba mul of degree 511 over GF(2^512): " << (t/10) << "s\n";
+  
+     if (C != C1) {
+!       cerr << "GF2EXTest NOT OK\n";
+        return 1;
+     }
+  
+--- 82,96 ----
+     t = GetTime();
+     for (i = 0; i < 10; i++) PlainMul(C, A, B);
+     t = GetTime() - t;
+!    printf("time for plain mul of degree 511 over GF(2^512): %fs\n", (t/10));
+  
+     t = GetTime();
+     for (i = 0; i < 10; i++) mul(C1, A, B);
+     t = GetTime() - t;
+!    printf("time for karatsuba mul of degree 511 over GF(2^512): %fs\n", (t/10));
+  
+     if (C != C1) {
+!       printf("GF2EXTest NOT OK\n");
+        return 1;
+     }
+  
+***************
+*** 98,104 ****
+  
+     {
+  
+!    cerr << "multiplication test...\n";
+  
+     BuildIrred(p, 16);
+     GF2E::init(p);
+--- 98,104 ----
+  
+     {
+  
+!    printf("multiplication test...\n");
+  
+     BuildIrred(p, 16);
+     GF2E::init(p);
+***************
+*** 114,133 ****
+     t = GetTime();
+     for (i = 0; i < 10; i++) PlainMul(C, A, B);
+     t = GetTime() - t;
+!    cerr << "time for plain mul of degree 511 over GF(2^16): " << (t/10) << "s\n";
+  
+     t = GetTime();
+     for (i = 0; i < 10; i++) mul(C1, A, B);
+     t = GetTime() - t;
+!    cerr << "time for karatsuba mul of degree 511 over GF(2^16): " << (t/10) << "s\n";
+  
+     if (C != C1) {
+!       cerr << "GF2EXTest NOT OK\n";
+        return 1;
+     }
+  
+     }
+  
+!    cerr << "GF2EXTest OK\n";
+     return 0;
+  }
+--- 114,133 ----
+     t = GetTime();
+     for (i = 0; i < 10; i++) PlainMul(C, A, B);
+     t = GetTime() - t;
+!    printf("time for plain mul of degree 511 over GF(2^16): %fs\n",(t/10));
+  
+     t = GetTime();
+     for (i = 0; i < 10; i++) mul(C1, A, B);
+     t = GetTime() - t;
+!    printf("time for karatsuba mul of degree 511 over GF(2^16): %fs\n",(t/10));
+  
+     if (C != C1) {
+!       printf("GF2EXTest NOT OK\n");
+        return 1;
+     }
+  
+     }
+  
+!    printf("GF2EXTest OK\n");
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/GF2XTest.c ./src/GF2XTest.c
+*** ../ntl-5.5.2/src/GF2XTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/GF2XTest.c	2010-07-16 17:45:46.000000000 -0400
+***************
+*** 1,5 ****
+--- 1,6 ----
+  
+  #include <NTL/GF2X.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+***************
+*** 19,37 ****
+  
+  int main()
+  {
+     long n;
+     GF2X a, b, c, c1, ss, ss1, tt, tt1;
+     double t;
+     long iter, i;
+  
+!    cout << WD(12,"n") << WD(12,"OldGCD") <<  WD(12,"GCD") << WD(12,"OldXGCD")
+!         << WD(12, "XGCD") << "\n";
+! 
+!    cout.precision(3);
+!    cout.setf(ios::scientific);
+  
+  
+     for (n = 32; n <= (1L << 18); n = n << 1) {
+        random(a, n);
+        random(b, n);
+        OldGCD(c, a, b);
+--- 20,42 ----
+  
+  int main()
+  {
++    std::ofstream outFile;
+     long n;
+     GF2X a, b, c, c1, ss, ss1, tt, tt1;
+     double t;
+     long iter, i;
++    printf("Starting GF2XTest");
+  
+!    outFile.open ("XXX");
+!    outFile << WD(12,"n") << WD(12,"OldGCD") <<  WD(12,"GCD") << WD(12,"OldXGCD")
+!            << WD(12, "XGCD") << "\n";
+  
++   // outFile.precision(3);
++   // outFile.setf(ios::scientific);
+  
++    printf("Round: ");
+     for (n = 32; n <= (1L << 18); n = n << 1) {
++       printf("%d ",n);
+        random(a, n);
+        random(b, n);
+        OldGCD(c, a, b);
+***************
+*** 39,49 ****
+        OldXGCD(c, ss, tt, a, b);
+        XGCD(c1, ss1, tt1, a, b);
+        if (c1 != c || ss1 != ss || tt1 != tt) {
+!          cerr << "**** GF2XTest FAILED!\n";
+           return 1;
+        }
+  
+!       cout << WD(12,n); 
+  
+        iter = 0;
+        do {
+--- 44,55 ----
+        OldXGCD(c, ss, tt, a, b);
+        XGCD(c1, ss1, tt1, a, b);
+        if (c1 != c || ss1 != ss || tt1 != tt) {
+!          outFile << "**** GF2XTest FAILED!\n";
+! 	 printf("**** GF2XTest FAILED!\n");
+           return 1;
+        }
+  
+!       outFile << WD(12,n); 
+  
+        iter = 0;
+        do {
+***************
+*** 54,60 ****
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       cout << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+--- 60,66 ----
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       outFile << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+***************
+*** 65,71 ****
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       cout << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+--- 71,77 ----
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       outFile << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+***************
+*** 76,82 ****
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       cout << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+--- 82,88 ----
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       outFile << WD(12,t/iter);
+  
+        iter = 0;
+        do {
+***************
+*** 87,95 ****
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       cout << WD(12,t/iter);
+  
+!       cout << "\n";
+     }
+  
+     return 0;
+--- 93,101 ----
+           t = GetTime()-t;
+        } while (t < 0.5);
+  
+!       outFile << WD(12,t/iter);
+  
+!       outFile << "\n";
+     }
+  
+     return 0;
+diff -crB ../ntl-5.5.2/src/LLLTest.c ./src/LLLTest.c
+*** ../ntl-5.5.2/src/LLLTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/LLLTest.c	2010-07-19 11:51:15.000000000 -0400
+***************
+*** 1,28 ****
+  
+  #include <NTL/LLL.h>
+  
+  NTL_CLIENT
+  
+! int main()
+  {
+     mat_ZZ B;
+     long s;
+  
+  #if 1
+!    cin >> B;
+  #else
+     long i, j;
+     long n;
+!    cerr << "n: ";
+!    cin >> n;
+  
+     long m;
+!    cerr << "m: ";
+!    cin >> m;
+  
+     long k;
+!    cerr << "k: ";
+!    cin >> k;
+  
+     B.SetDims(n, m);
+     for (i = 1; i <= n; i++)
+--- 1,39 ----
+  
+  #include <NTL/LLL.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++    outFile.open(argv[2]);
++ 
+     mat_ZZ B;
+     long s;
+  
+  #if 1
+!    inFile >> B;
+  #else
+     long i, j;
+     long n;
+!    printf("n: ");
+!    inFile >> n;
+  
+     long m;
+!    printf("m: ");
+!    inFile >> m;
+  
+     long k;
+!    printf("k: ");
+!    inFile >> k;
+!    inFile.close();
+  
+     B.SetDims(n, m);
+     for (i = 1; i <= n; i++)
+***************
+*** 42,61 ****
+     ZZ d;
+  
+     B = B0;
+!    cerr << "LLL_FP...";
+     t = GetTime();
+     s = LLL_FP(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "LLL_QP...";
+     t = GetTime();
+     s = LLL_QP(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+--- 53,72 ----
+     ZZ d;
+  
+     B = B0;
+!    printf("LLL_FP...");
+     t = GetTime();
+     s = LLL_FP(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("LLL_QP...");
+     t = GetTime();
+     s = LLL_QP(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+***************
+*** 63,122 ****
+  
+  
+     B = B0;
+!    cerr << "LLL_XD...";
+     t = GetTime();
+     s = LLL_XD(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "LLL_RR...";
+     t = GetTime();
+     s = LLL_RR(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "G_LLL_FP...";
+     t = GetTime();
+     s = G_LLL_FP(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "G_LLL_QP...";
+     t = GetTime();
+     s = G_LLL_QP(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "G_LLL_XD...";
+     t = GetTime();
+     s = G_LLL_XD(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    cerr << "G_LLL_RR...";
+     t = GetTime();
+     s = G_LLL_RR(B, U, 0.99);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+--- 74,133 ----
+  
+  
+     B = B0;
+!    printf("LLL_XD...");
+     t = GetTime();
+     s = LLL_XD(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("LLL_RR...");
+     t = GetTime();
+     s = LLL_RR(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("G_LLL_FP...");
+     t = GetTime();
+     s = G_LLL_FP(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("G_LLL_QP...");
+     t = GetTime();
+     s = G_LLL_QP(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("G_LLL_XD...");
+     t = GetTime();
+     s = G_LLL_XD(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+     if (B1 != B) Error("bad LLLTest (2)");
+  
+     B = B0;
+!    printf("G_LLL_RR...");
+     t = GetTime();
+     s = G_LLL_RR(B, U, 0.99);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+     LLL(d, B, 90, 100);
+***************
+*** 124,139 ****
+  
+  
+     B = B0;
+!    cerr << "LLL...";
+     t = GetTime();
+     s = LLL(d, B, U);
+!    cerr << (GetTime()-t) << "\n";
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+  
+!    cout << "rank = " << s << "\n";
+!    cout << "det = " << d << "\n";
+!    cout << "B = " << B << "\n";
+!    cout << "U = " << U << "\n";
+  }
+  
+--- 135,152 ----
+  
+  
+     B = B0;
+!    printf("LLL...");
+     t = GetTime();
+     s = LLL(d, B, U);
+!    printf("%f\n",(GetTime()-t));
+     mul(B1, U, B0);
+     if (B1 != B) Error("bad LLLTest (1)");
+  
+!    outFile << "rank = " << s << "\n";
+!    outFile << "det = " << d << "\n";
+!    outFile << "B = " << B << "\n";
+!    outFile << "U = " << U << "\n";
+!    outFile.close();
+!    return 0;
+  }
+  
+diff -crB ../ntl-5.5.2/src/lzz_pEXTest.c ./src/lzz_pEXTest.c
+*** ../ntl-5.5.2/src/lzz_pEXTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/lzz_pEXTest.c	2010-07-16 18:29:25.000000000 -0400
+***************
+*** 33,39 ****
+     long i;
+     for (i = 0; i < 5; i++) {
+        long n = RandomBnd(20)+1;
+!       cerr << n << " ";
+  
+        random(f, n);
+        SetCoeff(f, n);
+--- 33,39 ----
+     long i;
+     for (i = 0; i < 5; i++) {
+        long n = RandomBnd(20)+1;
+!       printf("%f ");
+  
+        random(f, n);
+        SetCoeff(f, n);
+***************
+*** 41,47 ****
+        v = CanZass(f);
+  
+        g = mul(v);
+!       if (f != g) cerr << "oops1\n";
+  
+        long i;
+        for (i = 0; i < v.length(); i++)
+--- 41,47 ----
+        v = CanZass(f);
+  
+        g = mul(v);
+!       if (f != g) printf("oops1\n");
+  
+        long i;
+        for (i = 0; i < v.length(); i++)
+***************
+*** 51,57 ****
+  
+     }
+  
+!    cerr << "\n";
+  
+!    cerr << "zz_pEXTest OK\n";
+  }
+--- 51,57 ----
+  
+     }
+  
+!    printf("\n");
+  
+!    printf("zz_pEXTest OK\n");
+  }
+diff -crB ../ntl-5.5.2/src/makefile ./src/makefile
+*** ../ntl-5.5.2/src/makefile	2009-08-14 08:53:13.000000000 -0400
+--- ./src/makefile	2010-07-23 13:44:17.000000000 -0400
+***************
+*** 6,74 ****
+  #
+  ###############################################################
+  
+! 
+! CC=gcc
+! # A C or C++ compiler, e. g., gcc, cc, xlc.
+! # There are a few components written in C which may be compiled
+! # under C++, but C compilers tend to generate slightly better code.
+! # The C++ and C compilers (if different) must generate
+! # compatible code.
+! 
+! 
+! CXX=g++
+! # A C++ compiler, e.g., g++, CC, xlC
+! 
+! 
+! CFLAGS=-O2
+! # Flags for the C compiler
+! # Some useful flags:
+! #   -O2   --  recommended level of optimization
+! #   -m64  --  needed to get 64-bit longs on some platforms
+! #   -g    --  debugging
+! #   -mcpu=v8  --  needed with gcc/g++ to get the full instruction set
+! #                 of a SparcStation
+! #   -qarch=ppc  -- needed with xlc/C to get the full instruction set
+! #                  of a PowerPC
+! 
+! 
+! 
+! CXXFLAGS=$(CFLAGS)
+! # Flags for the C++ compiler (usually the same as CFLAGS)
+! # Some useful flags:
+! #   -+  -- needed with xlC to make it treat .c files as C++ files
+! 
+! # Here are a few more variables for standard utilities.
+! # The defaults should almost always be OK.
+! 
+! 
+! AR=ar
+! # command to make a library
+! 
+  ARFLAGS=ruv
+- # arguments for AR
+- 
+- RANLIB=ranlib
+- # set to echo if you want to disable it completely
+- 
+- LDFLAGS=
+- # arguments for linker for C programs
+  
+! LDFLAGS_CXX=$(LDFLAGS)
+! # libraries for linking C++ programs
+! 
+! LDLIBS=-lm
+! # libraries for linking C programs
+! 
+! LDLIBS_CXX=$(LDLIBS)
+! # libraries for linking C++ programs
+! 
+! CPPFLAGS=
+! # arguments for the C preprocessor
+  
+  LIBTOOL=libtool
+  # libtool command
+  
+! DEF_PREFIX=/usr/local
+  
+  PREFIX=$(DEF_PREFIX)
+  LIBDIR=$(PREFIX)/lib
+--- 8,29 ----
+  #
+  ###############################################################
+  
+! NDK_DIR=/home/idan/Desktop/AndroidDev/android-ndk-r4
+! PHONE_TMP_DIR=/data/local/src
+! TOOLCHAIN=arm-eabi-4.4.0
+! TARGET_ARCH_ABI=armeabi-v7a	#armeabi-v7a for v7 arm, armeabi for greater compatability
+! 
+! CC=arm-eabi-gcc
+! CXX=arm-eabi-g++
+! AR=arm-eabi-ar
+  ARFLAGS=ruv
+  
+! RANLIB=arm-eabi-ranlib
+  
+  LIBTOOL=libtool
+  # libtool command
+  
+! DEF_PREFIX=/home/idan/Desktop/lib
+  
+  PREFIX=$(DEF_PREFIX)
+  LIBDIR=$(PREFIX)/lib
+***************
+*** 92,98 ****
+  ###############################################################
+  
+  
+! GMP_PREFIX=$(DEF_PREFIX)
+  
+  GMP_INCDIR=$(GMP_PREFIX)/include
+  # directory containing gmp.h if using GMP 
+--- 47,53 ----
+  ###############################################################
+  
+  
+! GMP_PREFIX=/home/idan/Desktop/lib/gmp
+  
+  GMP_INCDIR=$(GMP_PREFIX)/include
+  # directory containing gmp.h if using GMP 
+***************
+*** 100,108 ****
+  GMP_LIBDIR=$(GMP_PREFIX)/lib
+  # directory containing libgmp.a if using GMP 
+  
+! GMP_OPT_INCDIR=# -I$(GMP_INCDIR) # GMP
+! GMP_OPT_LIBDIR=# -L$(GMP_LIBDIR) # GMP
+! GMP_OPT_LIB=# -lgmp # GMP
+  # uncomment these if using GMP
+  
+  
+--- 55,63 ----
+  GMP_LIBDIR=$(GMP_PREFIX)/lib
+  # directory containing libgmp.a if using GMP 
+  
+! GMP_OPT_INCDIR= -I$(GMP_INCDIR) # GMP
+! GMP_OPT_LIBDIR= -L$(GMP_LIBDIR) # GMP
+! GMP_OPT_LIB= -lgmp # GMP
+  # uncomment these if using GMP
+  
+  
+***************
+*** 138,144 ****
+  ###############################################################
+  
+  
+! WIZARD=on
+  # Set to off if you want to bypass the wizard; otherwise, set to on.
+  
+  
+--- 93,99 ----
+  ###############################################################
+  
+  
+! WIZARD=off
+  # Set to off if you want to bypass the wizard; otherwise, set to on.
+  
+  
+***************
+*** 251,257 ****
+  
+  # scripts
+  
+! SCRIPTS1=MakeGetTime TestScript dosify unixify RemoveProg 
+  SCRIPTS2=$(SCRIPTS1) configure DoConfig mfile cfile
+  
+  SCRIPTS=$(SCRIPTS2)
+--- 206,212 ----
+  
+  # scripts
+  
+! SCRIPTS1=MakeGetTime TestScript dosify unixify RemoveProg AndroidRemoveProg
+  SCRIPTS2=$(SCRIPTS1) configure DoConfig mfile cfile
+  
+  SCRIPTS=$(SCRIPTS2)
+***************
+*** 312,326 ****
+  
+  
+  NTL_INCLUDE = -I../include -I.
+- # NTL needs this to find its include files
+  
+! COMPILE = $(CC) $(NTL_INCLUDE) $(CPPFLAGS) $(CFLAGS) -c
+! COMPILE_CXX = $(CXX) $(NTL_INCLUDE) $(CPPFLAGS) $(CXXFLAGS) -c
+  
+! LINK = $(CC) $(NTL_INCLUDE) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS)
+! LINK_CXX = $(CXX) $(NTL_INCLUDE) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS_CXX)
+  
+  
+  
+  # 'make all' does a complete make, including all setup.
+  # It also creates the file 'all', which means you should
+--- 267,355 ----
+  
+  
+  NTL_INCLUDE = -I../include -I.
+  
+! TOOLCHAIN=arm-eabi-4.4.0
+! 
+! TOOLCHAIN_DIR=$(NDK_DIR)/build/prebuilt/linux-x86/$(TOOLCHAIN)
+! 
+! PLATFORM_DIR=$(NDK_DIR)/build/platforms/android-8/arch-arm
+! 
+! CFLAGS = -I$(PLATFORM_DIR)/usr/include -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fomit-frame-pointer \
+!     -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 \
+!     -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ \
+!     -Wno-psabi -Wa,--noexecstack
+! 
+! TARGET_CRTBEGIN_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtbegin_dynamic.o
+! TARGET_CRTEND_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtend_android.o
+  
+! TARGET_LIBGCC := $(shell $(CC) -mthumb-interwork -print-libgcc-file-name)
+! TARGET_LDLIBS := -Wl,-rpath-link=$(PLATFORM_DIR)/usr/lib
+! 
+! TARGET_CXXLIBS := $(shell $(CXX) -mthumb-interwork -print-file-name=libstdc++.a)
+! TARGET_CXXLIBS += $(shell $(CXX) -mthumb-interwork -print-file-name=libsupc++.a)
+! TARGET_CXXLIBS += -lstdc++ -lsupc++
+! 
+! 
+! PRIVATE_CLIBS = -lc -lm
+! NTL_INCLUDE = -I../include -I.
+! 
+! ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+!     CFLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=vfp
+!     TARGET_LDFLAGS = -Wl,--fix-cortex-a8 -Wl,--no-undefined -Wl,-z,noexecstack
+! else
+!     CFLAGS += -march=armv5te -mtune=xscale -msoft-float
+!     TARGET_LDFLAGS = -Wl,--no-undefined -Wl,-z,noexecstack
+! endif
+! 
+! COMPILE = $(CC) $(NTL_INCLUDE) \
+!     -nostdlib -Bdynamic \
+!     -Wl,-dynamic-linker,/system/bin/linker \
+!     -Wl,--gc-sections \
+!     -Wl,-z,nocopyreloc \
+!     $(CFLAGS) \
+!     -c 
+! COMPILE_CXX = $(CXX) $(NTL_INCLUDE) \
+!     -nostdlib -Bdynamic \
+!     -Wl,-dynamic-linker,/system/bin/linker \
+!     -Wl,--gc-sections \
+!     -Wl,-z,nocopyreloc \
+!     $(CFLAGS) \
+!     -c 
+! 
+! LINK=$(CC) $(NTL_INCLUDE) \
+!     -nostdlib -Bdynamic \
+!     -Wl,-dynamic-linker,/system/bin/linker \
+!     -Wl,--gc-sections \
+!     -Wl,-z,nocopyreloc \
+!     $(CFLAGS) \
+!     $(TARGET_LDLIBS) \
+!     -L$(PLATFORM_DIR)/usr/lib \
+!     $(TARGET_CRTBEGIN_DYNAMIC_O) \
+!     $(TARGET_LIBGCC) \
+!     $(TARGET_CRTEND_O) \
+!     $(PRIVATE_CLIBS) 
+! 
+! LINK_CXX=$(CXX) $(NTL_INCLUDE) \
+!     -nostdlib -Bdynamic \
+!     -Wl,-dynamic-linker,/system/bin/linker \
+!     -Wl,--gc-sections \
+!     -Wl,-z,nocopyreloc \
+!     $(CFLAGS) \
+!     $(TARGET_LDLIBS) \
+!     -L$(PLATFORM_DIR)/usr/lib \
+!     $(TARGET_CRTBEGIN_DYNAMIC_O) \
+!     $(TARGET_LIBGCC) \
+!     $(TARGET_CRTEND_O) \
+!     $(TARGET_CXXLIBS) \
+!     $(PRIVATE_CLIBS) 
+! 
+! 
+! # NTL needs this to find its include files
+  
++ #COMPILE = $(CC) $(NTL_INCLUDE) $(CPPFLAGS) $(CFLAGS) -c
+  
++ #COMPILE_CXX =arm-eabi-g++ $(NTL_INCLUDE) -I$(NDK_DIR)/build/prebuilt/linux-x86/arm-eabi-4.4.0/arm-eabi/include/c++/4.4.0 -I../include -I. -DANDROID -msoft-float -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fno-exceptions -fmessage-length=0 -Wno-multichar -I$(NDK_DIR)/build/platforms/android-8/arch-arm/usr/include -c
++ #COMPILE=arm-eabi-gcc -I../include -I. -DANDROID -msoft-float -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fno-exceptions -fmessage-length=0 -Wno-multichar -I$(NDK_DIR)/build/platforms/android-8/arch-arm/usr/include -c
+  
+  # 'make all' does a complete make, including all setup.
+  # It also creates the file 'all', which means you should
+***************
+*** 340,353 ****
+  
+  setup1:
+  	$(COMPILE) MakeDescAux.c
+! 	$(LINK) -o MakeDesc MakeDesc.c MakeDescAux.o $(LDLIBS)
+! 	./MakeDesc
+  	mv mach_desc.h ../include/NTL/mach_desc.h
+  
+  # setup2 generates the file GetTime.c
+  
+  setup2:
+! 	sh MakeGetTime "$(LINK)" "$(LDLIBS)"
+  
+  # setup3 generates the files lip_gmp_aux_impl.h and ../include/NTL/gmp_aux.h
+  # The file lip_gmp_aux_impl.h is included when lip.c when NTL_GMP_HACK is set.
+--- 369,384 ----
+  
+  setup1:
+  	$(COMPILE) MakeDescAux.c
+! 	$(LINK) -o MakeDesc MakeDesc.c MakeDescAux.o
+! 	adb push MakeDesc $(PHONE_TMP_DIR)/MakeDesc
+! 	adb shell $(PHONE_TMP_DIR)/MakeDesc
+! 	adb pull $(PHONE_TMP_DIR)/mach_desc.h
+  	mv mach_desc.h ../include/NTL/mach_desc.h
+  
+  # setup2 generates the file GetTime.c
+  
+  setup2:
+! 	sh MakeGetTime "$(LINK)" "$(PHONE_TMP_DIR)"
+  
+  # setup3 generates the files lip_gmp_aux_impl.h and ../include/NTL/gmp_aux.h
+  # The file lip_gmp_aux_impl.h is included when lip.c when NTL_GMP_HACK is set.
+***************
+*** 356,365 ****
+  # When these flags are not set, empty files are produced.
+  
+  setup3:
+! 	$(LINK) $(GMP_OPT_INCDIR) -o gen_lip_gmp_aux gen_lip_gmp_aux.c $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(LDLIBS)
+! 	./gen_lip_gmp_aux > lip_gmp_aux_impl.h
+! 	$(LINK) $(GMP_OPT_INCDIR) -o gen_gmp_aux gen_gmp_aux.c $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(LDLIBS)
+! 	./gen_gmp_aux > ../include/NTL/gmp_aux.h
+  
+  # setup4 runs the wizard
+  
+--- 387,398 ----
+  # When these flags are not set, empty files are produced.
+  
+  setup3:
+! 	$(LINK) $(GMP_OPT_INCDIR) -o gen_lip_gmp_aux gen_lip_gmp_aux.c $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB)
+! 	adb push gen_lip_gmp_aux $(PHONE_TMP_DIR)/gen_lip_gmp_aux
+! 	adb shell $(PHONE_TMP_DIR)/gen_lip_gmp_aux > lip_gmp_aux_impl.h
+! 	$(LINK) $(GMP_OPT_INCDIR) -o gen_gmp_aux gen_gmp_aux.c $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB)
+! 	adb push gen_gmp_aux $(PHONE_TMP_DIR)/gen_gmp_aux
+! 	adb shell $(PHONE_TMP_DIR)/gen_gmp_aux > ../include/NTL/gmp_aux.h
+  
+  # setup4 runs the wizard
+  
+***************
+*** 391,397 ****
+  	$(LCOMP) $(COMPILE_CXX) $(GF2X_OPT_INCDIR) $<
+  
+  .c: 
+! 	$(LINK_CXX) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS_CXX) #LSTAT
+  # 	$(LIBTOOL) --mode=link $(LINK_CXX) -o $@ $< libntl.la #LSHAR
+  
+  #################################################################
+--- 424,430 ----
+  	$(LCOMP) $(COMPILE_CXX) $(GF2X_OPT_INCDIR) $<
+  
+  .c: 
+! 	$(LINK_CXX) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(TARGET_CXXLIBS) #LSTAT
+  # 	$(LIBTOOL) --mode=link $(LINK_CXX) -o $@ $< libntl.la #LSHAR
+  
+  #################################################################
+***************
+*** 403,412 ****
+  
+  check:
+  	sh RemoveProg $(PROGS)
+  	make QuickTest
+! 	./QuickTest
+  	sh RemoveProg QuickTest
+! 	sh TestScript
+  
+  #################################################################
+  #
+--- 436,448 ----
+  
+  check:
+  	sh RemoveProg $(PROGS)
++ 	sh AndroidRemoveProg $(PHONE_TMP_DIR)/$(PROGS) 
+  	make QuickTest
+! 	adb push QuickTest $(PHONE_TMP_DIR)/QuickTest
+! 	adb shell $(PHONE_TMP_DIR)/QuickTest
+  	sh RemoveProg QuickTest
+! 	sh AndroidRemoveProg $(PHONE_TMP_DIR)/QuickTest
+! 	sh TestScript $(PHONE_TMP_DIR)
+  
+  #################################################################
+  #
+***************
+*** 463,469 ****
+  clobber:	
+  	rm -f ntl.a mach_desc.h ../include/NTL/mach_desc.h  GetTime.c 
+  	rm -f lip_gmp_aux_impl.h ../include/NTL/gmp_aux.h
+! 	sh RemoveProg $(PROGS) MakeDesc TestGetTime gen_lip_gmp_aux gen_gmp_aux
+  	rm -f *.o
+  	rm -rf small
+  	rm -f cfileout mfileout
+--- 499,506 ----
+  clobber:	
+  	rm -f ntl.a mach_desc.h ../include/NTL/mach_desc.h  GetTime.c 
+  	rm -f lip_gmp_aux_impl.h ../include/NTL/gmp_aux.h
+! 	sh RemoveProg $(PROGS) MakeDesc TestGetTime gen_lip_gmp_aux gen_gmp_aux 
+! 	sh AndroidRemoveProg $(PHONE_TMP_DIR)/$(PROGS) $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime $(PHONE_TMP_DIR)/gen_lip_gmp_aux $(PHONE_TMP_DIR)/gen_gmp_aux
+  	rm -f *.o
+  	rm -rf small
+  	rm -f cfileout mfileout
+***************
+*** 472,477 ****
+--- 509,515 ----
+  
+  clean:
+  	sh RemoveProg MakeDesc TestGetTime gen_lip_gmp_aux gen_gmp_aux
++ 	sh AndroidRemoveProg $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime $(PHONE_TMP_DIR)/gen_lip_gmp_aux $(PHONE_TMP_DIR)/gen_gmp_aux
+  	rm -f *.o 
+  	rm -rf small
+  # 	- $(LIBTOOL) --mode=clean rm -f libntl.la *.lo #LSHAR
+diff -crB ../ntl-5.5.2/src/MakeGetTime ./src/MakeGetTime
+*** ../ntl-5.5.2/src/MakeGetTime	2009-08-14 08:53:11.000000000 -0400
+--- ./src/MakeGetTime	2010-07-23 13:45:01.000000000 -0400
+***************
+*** 10,41 ****
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime1.c $2
+! $1 -o TestGetTime TestGetTime.c GetTime1.c $2
+  
+  if test -f TestGetTime
+! then
+! if ./TestGetTime 1 1048576 1048575
+! then
+! cp GetTime1.c GetTime.c
+! echo "using GetTime1.c"
+! exit 0
+! fi
+  fi
+  
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime2.c $2
+! $1 -o TestGetTime TestGetTime.c GetTime2.c $2
+  
+  if test -f TestGetTime
+  then
+! if ./TestGetTime 1 1048576 1048575
+  then
+  cp GetTime2.c GetTime.c
+  echo "using GetTime2.c"
+--- 10,47 ----
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
++ sh AndroidRemoveProg $2/TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime1.c
+! $1 -o TestGetTime TestGetTime.c GetTime1.c
+! 
+! adb push TestGetTime $2/
+  
+  if test -f TestGetTime
+! 	then
+! 		if adb shell $2/TestGetTime 1 1048576 1048575
+! 		then
+! 			cp GetTime1.c GetTime.c
+! 			echo "using GetTime1.c"
+! 			exit 0
+! 		fi
+  fi
+  
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
++ sh AndroidRemoveProg $2/TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime2.c
+! $1 -o TestGetTime TestGetTime.c GetTime2.c
+! 
+! adb push TestGetTime $2/
+  
+  if test -f TestGetTime
+  then
+! if adb shell $2/TestGetTime 1 1048576 1048575
+  then
+  cp GetTime2.c GetTime.c
+  echo "using GetTime2.c"
+***************
+*** 46,59 ****
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime3.c $2
+! $1 -o TestGetTime TestGetTime.c GetTime3.c $2
+  
+  if test -f TestGetTime
+  then
+! if ./TestGetTime 1 1048576 1048575
+  then
+  cp GetTime3.c GetTime.c
+  echo "using GetTime3.c"
+--- 52,68 ----
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
++ sh AndroidRemoveProg $2/TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime3.c
+! $1 -o TestGetTime TestGetTime.c GetTime3.c
+! 
+! adb push TestGetTime $2/
+  
+  if test -f TestGetTime
+  then
+! if adb shell $2/TestGetTime 1 1048576 1048575
+  then
+  cp GetTime3.c GetTime.c
+  echo "using GetTime3.c"
+***************
+*** 64,78 ****
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime4.c $2
+! $1 -o TestGetTime TestGetTime.c GetTime4.c $2
+  
+  
+  if test -f TestGetTime
+  then
+! if ./TestGetTime 1 1048576 1048575
+  then
+  cp GetTime4.c GetTime.c
+  echo "using GetTime4.c"
+--- 73,89 ----
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
++ sh AndroidRemoveProg $2/TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime4.c
+! $1 -o TestGetTime TestGetTime.c GetTime4.c
+  
++ adb push TestGetTime $2/
+  
+  if test -f TestGetTime
+  then
+! if adb shell $2/TestGetTime 1 1048576 1048575
+  then
+  cp GetTime4.c GetTime.c
+  echo "using GetTime4.c"
+***************
+*** 83,93 ****
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime5.c $2
+! $1 -o TestGetTime TestGetTime.c GetTime5.c $2
+  
+  
+  if test -f TestGetTime
+  then
+--- 94,106 ----
+  if test -f TestGetTime
+  then
+  sh RemoveProg TestGetTime
++ sh AndroidRemoveProg $2/TestGetTime
+  fi
+  
+! echo $1 -o TestGetTime TestGetTime.c GetTime5.c
+! $1 -o TestGetTime TestGetTime.c GetTime5.c
+  
++ adb push TestGetTime $2/
+  
+  if test -f TestGetTime
+  then
+diff -crB ../ntl-5.5.2/src/MatrixTest.c ./src/MatrixTest.c
+*** ../ntl-5.5.2/src/MatrixTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/MatrixTest.c	2010-07-19 11:50:34.000000000 -0400
+***************
+*** 2,58 ****
+  #include <NTL/mat_ZZ.h>
+  #include <NTL/mat_poly_ZZ.h>
+  #include <NTL/HNF.h>
+  
+  NTL_CLIENT
+  
+! int main()
+  {
+     mat_ZZ B, X;
+     vec_ZZ v, w;
+  
+!    cin >> B;
+!    cin >> v;
+  
+     ZZ d;
+  
+     double t;
+!    cerr << "matrix inverse...";
+     t = GetTime();
+     inv(d, X, B);
+!    cerr << (GetTime()-t) << "\n";
+  
+!    cout << d << "\n";
+!    cout << X << "\n";
+  
+!    cout << "\n\n\n";
+  
+!    cerr << "hensel solve...";
+     t = GetTime();
+     HenselSolve1(d, w, B, v);
+!    cerr << (GetTime()-t) << "\n";
+  
+!    cout << d << "\n";
+!    cout << w << "\n";
+  
+!    cout << "\n\n\n";
+  
+     ZZX f;
+  
+!    cerr << "char poly...";
+     t = GetTime();
+     CharPoly(f, B);
+!    cerr << (GetTime()-t) << "\n";
+  
+!    cout << f << "\n";
+  
+!    cout << "\n\n\n";
+  
+!    cerr << "HNF...";
+     t = GetTime();
+     HNF(X, B, d);
+!    cerr << (GetTime()-t) << "\n";
+  
+!    cout << X;
+  
+     return 0;
+  }
+--- 2,70 ----
+  #include <NTL/mat_ZZ.h>
+  #include <NTL/mat_poly_ZZ.h>
+  #include <NTL/HNF.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++ 
+     mat_ZZ B, X;
+     vec_ZZ v, w;
+  
+!    inFile >> B;
+!    inFile >> v;
+  
+     ZZ d;
+  
++    outFile.open(argv[2]);
++ 
+     double t;
+!    printf("matrix inverse...");
+     t = GetTime();
+     inv(d, X, B);
+!    printf("%f\n",(GetTime()-t));
+  
+!    outFile << d << "\n";
+!    outFile << X << "\n";
+  
+!    outFile << "\n\n\n";
+  
+!    printf("hensel solve...");
+     t = GetTime();
+     HenselSolve1(d, w, B, v);
+!    printf("%f\n",(GetTime()-t));
+  
+!    outFile << d << "\n";
+!    outFile << w << "\n";
+  
+!    outFile << "\n\n\n";
+  
+     ZZX f;
+  
+!    printf("char poly...");
+     t = GetTime();
+     CharPoly(f, B);
+!    printf("%f\n", (GetTime()-t));
+  
+!    outFile << f << "\n";
+  
+!    outFile << "\n\n\n";
+  
+!    printf("HNF...");
+     t = GetTime();
+     HNF(X, B, d);
+!    printf("%f\n",(GetTime()-t));
+  
+!    outFile << X;
+  
++    outFile.close();
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/MoreFacTest.c ./src/MoreFacTest.c
+*** ../ntl-5.5.2/src/MoreFacTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/MoreFacTest.c	2010-07-19 11:37:27.000000000 -0400
+***************
+*** 1,4 ****
+--- 1,5 ----
+  #include <NTL/ZZXFactoring.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+***************
+*** 16,34 ****
+  }
+  
+  
+! int main()
+  {
+     long cnt = 0;
+!    while (SkipWhiteSpace(cin)) {
+        cnt++;
+!       cerr << ".";
+  
+        vec_ZZ w;
+        ZZX f1, f;
+        long nfacs;
+  
+!       cin >> w;
+!       cin >> nfacs;
+  
+        long i, n;
+        n = w.length();
+--- 17,42 ----
+  }
+  
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++ 
+     long cnt = 0;
+!    while (SkipWhiteSpace(inFile)) {
+        cnt++;
+!       printf(".");
+  
+        vec_ZZ w;
+        ZZX f1, f;
+        long nfacs;
+  
+!       inFile >> w;
+!       inFile >> nfacs;
+  
+        long i, n;
+        n = w.length();
+***************
+*** 47,54 ****
+        mul(f1, f1, c);
+  
+        if (f != f1) {
+!          cerr << f << "\n";
+!          cerr << c << " " << factors << "\n";
+           Error("FACTORIZATION INCORRECT (1) !!!");
+        }
+  
+--- 55,62 ----
+        mul(f1, f1, c);
+  
+        if (f != f1) {
+!          //printf("%f\n",f);
+!          //cerr << c << " " << factors << "\n"; //factors data type doesn't play well with printf...
+           Error("FACTORIZATION INCORRECT (1) !!!");
+        }
+  
+***************
+*** 58,66 ****
+           Error("FACTORIZATION INCORRECT (2) !!!");
+     }
+  
+! 
+!    cerr << "\n";
+!    cerr << "MoreFacTest OK\n";
+  
+     return 0;
+  }
+--- 66,74 ----
+           Error("FACTORIZATION INCORRECT (2) !!!");
+     }
+  
+!    inFile.close();
+!    printf("\n");
+!    printf("MoreFacTest OK\n");
+  
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/QuadTest.c ./src/QuadTest.c
+*** ../ntl-5.5.2/src/QuadTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/QuadTest.c	2010-07-19 11:51:06.000000000 -0400
+***************
+*** 1,58 ****
+  
+  #include <NTL/quad_float.h>
+  
+  NTL_CLIENT
+  
+! int main()
+  {
+     quad_float a, b, c, d;
+  
+     quad_float::SetOutputPrecision(25);
+  
+     if (PrecisionOK())
+!       cout << "Precision OK\n";
+     else
+!       cout << "Precision not OK\n";
+  
+  
+!    cin >> a;
+!    cout << a << "\n";
+  
+!    cin >> b;
+!    cout << b << "\n";
+  
+     c = a + b;
+     d = a;
+     d += b;
+!    cout << c << "\n";
+!    cout << d << "\n";
+  
+     c = a - b;
+     d = a;
+     d -= b;
+!    cout << c << "\n";
+!    cout << d << "\n";
+  
+     c = a * b;
+     d = a;
+     d *= b;
+!    cout << c << "\n";
+!    cout << d << "\n";
+  
+     c = a / b;
+     d = a;
+     d /= b;
+!    cout << c << "\n";
+!    cout << d << "\n";
+  
+     c = -a;
+!    cout << c << "\n";
+  
+     c = sqrt(a);
+!    cout << c << "\n";
+  
+     power(c, to_quad_float(10), 20);
+!    cout << c << "\n";
+  
+     {
+  
+--- 1,70 ----
+  
+  #include <NTL/quad_float.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++    outFile.open(argv[2]);
++ 
+     quad_float a, b, c, d;
+  
+     quad_float::SetOutputPrecision(25);
+  
+     if (PrecisionOK())
+!       outFile << "Precision OK\n";
+     else
+!       outFile << "Precision not OK\n";
+  
+  
+!    inFile >> a;
+!    outFile << a << "\n";
+  
+!    inFile >> b;
+!    outFile << b << "\n";
+! 
+!    inFile.close();
+  
+     c = a + b;
+     d = a;
+     d += b;
+!    outFile << c << "\n";
+!    outFile << d << "\n";
+  
+     c = a - b;
+     d = a;
+     d -= b;
+!    outFile << c << "\n";
+!    outFile << d << "\n";
+  
+     c = a * b;
+     d = a;
+     d *= b;
+!    outFile << c << "\n";
+!    outFile << d << "\n";
+  
+     c = a / b;
+     d = a;
+     d /= b;
+!    outFile << c << "\n";
+!    outFile << d << "\n";
+  
+     c = -a;
+!    outFile << c << "\n";
+  
+     c = sqrt(a);
+!    outFile << c << "\n";
+  
+     power(c, to_quad_float(10), 20);
+!    outFile << c << "\n";
+  
+     {
+  
+***************
+*** 64,81 ****
+     n1 = to_long(c);
+  
+     if (n1 == n)
+!       cout << "long conversion OK\n";
+     else
+!       cout << "long conversion not OK\n";
+  
+     n = to_long(1UL << (shamt-1));
+     c = to_quad_float(n);
+     n1 = to_long(c);
+  
+     if (n1 == n)
+!       cout << "long conversion OK\n";
+     else
+!       cout << "long conversion not OK\n";
+  
+     }
+  
+--- 76,93 ----
+     n1 = to_long(c);
+  
+     if (n1 == n)
+!       outFile << "long conversion OK\n";
+     else
+!       outFile << "long conversion not OK\n";
+  
+     n = to_long(1UL << (shamt-1));
+     c = to_quad_float(n);
+     n1 = to_long(c);
+  
+     if (n1 == n)
+!       outFile << "long conversion OK\n";
+     else
+!       outFile << "long conversion not OK\n";
+  
+     }
+  
+***************
+*** 90,108 ****
+     n1 = to_ZZ(c);
+  
+     if (n1 == to_ZZ(n))
+!       cout << "ulong conversion OK\n";
+     else
+!       cout << "ulong conversion not OK\n";
+  
+     n = 1UL << (shamt-1);
+     c = to_quad_float(n);
+     n1 = to_ZZ(c);
+  
+     if (n1 == to_ZZ(n))
+!       cout << "ulong conversion OK\n";
+     else
+!       cout << "ulong conversion not OK\n";
+  
+     }
+! 
+  }
+--- 102,120 ----
+     n1 = to_ZZ(c);
+  
+     if (n1 == to_ZZ(n))
+!       outFile << "ulong conversion OK\n";
+     else
+!       outFile << "ulong conversion not OK\n";
+  
+     n = 1UL << (shamt-1);
+     c = to_quad_float(n);
+     n1 = to_ZZ(c);
+  
+     if (n1 == to_ZZ(n))
+!       outFile << "ulong conversion OK\n";
+     else
+!       outFile << "ulong conversion not OK\n";
+  
+     }
+!    outFile.close();
+  }
+diff -crB ../ntl-5.5.2/src/QuickTest.c ./src/QuickTest.c
+*** ../ntl-5.5.2/src/QuickTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/QuickTest.c	2010-07-16 15:58:29.000000000 -0400
+***************
+*** 79,86 ****
+        t = GetTime() - t;
+     } while (t < 0.5);
+  
+!    cerr << "time to multiply polynomials over GF(2) \n   of degree < 1000000: "
+!         << (t/iter) << "s\n";
+  
+  #ifdef NTL_GF2X_LIB
+     OldMul(c, a, b);
+--- 79,85 ----
+        t = GetTime() - t;
+     } while (t < 0.5);
+  
+!    printf("time to multiply polynomials over GF(2) \n   of degree < 1000000: %fs\n",(t/iter));
+  
+  #ifdef NTL_GF2X_LIB
+     OldMul(c, a, b);
+***************
+*** 94,100 ****
+        t = GetTime() - t;
+     } while (t < 0.5);
+  
+!    cerr << "   **** using old code: "  << (t/iter) << "s\n";
+  #endif
+  
+  }
+--- 93,99 ----
+        t = GetTime() - t;
+     } while (t < 0.5);
+  
+!    printf("   **** using old code: %fs\n",(t/iter));
+  #endif
+  
+  }
+***************
+*** 104,247 ****
+  {
+  
+  
+!    cerr << "This is NTL version " << NTL_VERSION << "\n"; 
+  
+!    cerr << "Basic Configuration Options:\n";
+  
+  
+  #ifdef NTL_STD_CXX
+!    cerr << "NTL_STD_CXX\n";
+  #endif
+  
+  #ifdef NTL_PSTD_NNS
+!    cerr << "NTL_PSTD_NNS\n";
+  #endif
+  
+  #ifdef NTL_PSTD_NHF
+!    cerr << "NTL_PSTD_NHF\n";
+  #endif
+  
+  #ifdef NTL_PSTD_NTN
+!    cerr << "NTL_PSTD_NTN\n";
+  #endif
+  
+  #ifdef NTL_GMP_LIP
+!    cerr << "NTL_GMP_LIP\n";
+  #endif
+  
+  #ifdef NTL_GMP_HACK
+!    cerr << "NTL_GMP_HACK\n";
+  #endif
+  
+  #ifdef NTL_GF2X_LIB
+!    cerr << "NTL_GF2X_LIB\n";
+  #endif
+  
+  
+  #ifdef NTL_LONG_LONG_TYPE
+!    cerr << "NTL_LONG_LONG_TYPE: ";
+!    cerr << make_string(NTL_LONG_LONG_TYPE) << "\n";
+  #endif
+  
+  #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
+!    cerr << "NTL_UNSIGNED_LONG_LONG_TYPE: ";
+!    cerr << make_string(NTL_UNSIGNED_LONG_LONG_TYPE) << "\n";
+  #endif
+  
+  #ifdef NTL_CXX_ONLY
+!    cerr << "NTL_CXX_ONLY\n";
+  #endif
+  
+  
+  #ifdef NTL_X86_FIX
+!    cerr << "NTL_X86_FIX\n";
+  #endif
+  
+  #ifdef NTL_NO_X86_FIX
+!    cerr << "NTL_NO_X86_FIX\n";
+  #endif
+  
+  #ifdef NTL_NO_INIT_TRANS
+!    cerr << "NTL_NO_INIT_TRANS\n";
+  #endif
+  
+  #ifdef NTL_CLEAN_INT
+!    cerr << "NTL_CLEAN_INT\n";
+  #endif
+  
+  #ifdef NTL_CLEAN_PTR
+!    cerr << "NTL_CLEAN_PTR\n";
+  #endif
+  
+  #ifdef NTL_RANGE_CHECK
+!    cerr << "NTL_RANGE_CHECK\n";
+  #endif
+  
+  
+! cerr << "\n";
+! cerr << "Resolution of double-word types:\n";
+! cerr << make_string(NTL_LL_TYPE) << "\n";
+! cerr << make_string(NTL_ULL_TYPE) << "\n";
+  
+  
+! cerr << "\n";
+! cerr << "Performance Options:\n";
+  
+  #ifdef NTL_LONG_LONG
+!    cerr << "NTL_LONG_LONG\n";
+  #endif
+  
+  #ifdef NTL_AVOID_FLOAT
+!    cerr << "NTL_AVOID_FLOAT\n";
+  #endif
+  
+  #ifdef NTL_SPMM_UL
+!    cerr << "NTL_SPMM_UL\n";
+  #endif
+  
+  
+  #ifdef NTL_SPMM_ULL
+!    cerr << "NTL_SPMM_ULL\n";
+  #endif
+  
+  
+  #ifdef NTL_SPMM_ASM
+!    cerr << "NTL_SPMM_ASM\n";
+  #endif
+  
+  
+  
+  
+  #ifdef NTL_AVOID_BRANCHING
+!    cerr << "NTL_AVOID_BRANCHING\n";
+  #endif
+  
+  
+  
+  #ifdef NTL_TBL_REM
+!    cerr << "NTL_TBL_REM\n";
+  #endif
+  
+  
+  #ifdef NTL_GF2X_ALTCODE
+!    cerr << "NTL_GF2X_ALTCODE\n";
+  #endif
+  
+  #ifdef NTL_GF2X_ALTCODE1
+!    cerr << "NTL_GF2X_ALTCODE1\n";
+  #endif
+  
+  
+  #ifdef NTL_GF2X_NOINLINE
+!    cerr << "NTL_GF2X_NOINLINE\n";
+  #endif
+  
+!    cerr << "\n\n";
+  
+     if (_ntl_gmp_hack)
+!       cerr << "using GMP hack\n\n";
+  
+!    cerr << "running tests...";
+  
+     long n, k;
+  
+--- 103,242 ----
+  {
+  
+  
+!    printf("This is NTL version %s\n",NTL_VERSION); 
+  
+!    printf("Basic Configuration Options:\n");
+  
+  
+  #ifdef NTL_STD_CXX
+!    printf("NTL_STD_CXX\n");
+  #endif
+  
+  #ifdef NTL_PSTD_NNS
+!    printf("NTL_PSTD_NNS\n");
+  #endif
+  
+  #ifdef NTL_PSTD_NHF
+!    printf("NTL_PSTD_NHF\n");
+  #endif
+  
+  #ifdef NTL_PSTD_NTN
+!    printf("NTL_PSTD_NTN\n");
+  #endif
+  
+  #ifdef NTL_GMP_LIP
+!    printf("NTL_GMP_LIP\n");
+  #endif
+  
+  #ifdef NTL_GMP_HACK
+!    printf("NTL_GMP_HACK\n");
+  #endif
+  
+  #ifdef NTL_GF2X_LIB
+!    printf("NTL_GF2X_LIB\n");
+  #endif
+  
+  
+  #ifdef NTL_LONG_LONG_TYPE
+!    printf("NTL_LONG_LONG_TYPE: %s\n", make_string(NTL_LONG_LONG_TYPE));
+  #endif
+  
+  #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
+!    printf("NTL_UNSIGNED_LONG_LONG_TYPE: %s\n", make_string(NTL_UNSIGNED_LONG_LONG_TYPE));
+  #endif
+  
+  #ifdef NTL_CXX_ONLY
+!    printf("NTL_CXX_ONLY\n");
+  #endif
+  
+  
+  #ifdef NTL_X86_FIX
+!    printf("NTL_X86_FIX\n");
+  #endif
+  
+  #ifdef NTL_NO_X86_FIX
+!    printf("NTL_NO_X86_FIX\n");
+  #endif
+  
+  #ifdef NTL_NO_INIT_TRANS
+!    printf("NTL_NO_INIT_TRANS\n");
+  #endif
+  
+  #ifdef NTL_CLEAN_INT
+!    printf("NTL_CLEAN_INT\n");
+  #endif
+  
+  #ifdef NTL_CLEAN_PTR
+!    printf("NTL_CLEAN_PTR\n");
+  #endif
+  
+  #ifdef NTL_RANGE_CHECK
+!    printf("NTL_RANGE_CHECK\n");
+  #endif
+  
+  
+! printf("\n");
+! printf("Resolution of double-word types:\n%s\n%s\n", make_string(NTL_LL_TYPE), make_string(NTL_ULL_TYPE));
+  
+  
+! printf("\n");
+! printf("Performance Options:\n");
+  
+  #ifdef NTL_LONG_LONG
+!    printf("NTL_LONG_LONG\n");
+  #endif
+  
+  #ifdef NTL_AVOID_FLOAT
+!    printf("NTL_AVOID_FLOAT\n");
+  #endif
+  
+  #ifdef NTL_SPMM_UL
+!    printf("NTL_SPMM_UL\n");
+  #endif
+  
+  
+  #ifdef NTL_SPMM_ULL
+!    printf("NTL_SPMM_ULL\n");
+  #endif
+  
+  
+  #ifdef NTL_SPMM_ASM
+!    printf("NTL_SPMM_ASM\n");
+  #endif
+  
+  
+  
+  
+  #ifdef NTL_AVOID_BRANCHING
+!    printf("NTL_AVOID_BRANCHING\n");
+  #endif
+  
+  
+  
+  #ifdef NTL_TBL_REM
+!    printf("NTL_TBL_REM\n");
+  #endif
+  
+  
+  #ifdef NTL_GF2X_ALTCODE
+!    printf("NTL_GF2X_ALTCODE\n");
+  #endif
+  
+  #ifdef NTL_GF2X_ALTCODE1
+!    printf("NTL_GF2X_ALTCODE1\n");
+  #endif
+  
+  
+  #ifdef NTL_GF2X_NOINLINE
+!    printf("NTL_GF2X_NOINLINE\n");
+  #endif
+  
+!    printf("\n\n");
+  
+     if (_ntl_gmp_hack)
+!       printf("using GMP hack\n\n");
+  
+!    printf("running tests...");
+  
+     long n, k;
+  
+***************
+*** 288,298 ****
+     // compare the results...
+  
+     if (r1 != r2) {
+!       cerr << "r1 != r2!!\n";
+        return 1;
+     }
+     else if (r1 != r3) {
+!       cerr << "r1 != r3!!\n";
+        return 1;
+     }
+  
+--- 283,293 ----
+     // compare the results...
+  
+     if (r1 != r2) {
+!       printf("r1 != r2!!\n");
+        return 1;
+     }
+     else if (r1 != r3) {
+!       printf("r1 != r3!!\n");
+        return 1;
+     }
+  
+***************
+*** 302,325 ****
+     // we might as well check them here.
+  
+     if (SmallModulusTest(17, 1000)) {
+!       cerr << "first SmallModulusTest failed!!\n";
+        return 1;
+     }
+  
+     if (SmallModulusTest((1L << (NTL_SP_NBITS))-1, 1000)) {
+!       cerr << "second SmallModulusTest failed!!\n";
+        return 1;
+     }
+  
+     // Test gf2x code....
+  
+     if (GF2X_test()) {
+!       cerr << "GF2X test failed!\n";
+        return 1;
+     }
+     
+  
+!    cerr << "OK\n";
+  
+     ZZ x1, x2, x3, x4;
+     double t;
+--- 297,320 ----
+     // we might as well check them here.
+  
+     if (SmallModulusTest(17, 1000)) {
+!       printf("first SmallModulusTest failed!!\n");
+        return 1;
+     }
+  
+     if (SmallModulusTest((1L << (NTL_SP_NBITS))-1, 1000)) {
+!       printf("second SmallModulusTest failed!!\n");
+        return 1;
+     }
+  
+     // Test gf2x code....
+  
+     if (GF2X_test()) {
+!       printf("GF2X test failed!\n");
+        return 1;
+     }
+     
+  
+!    printf("OK\n");
+  
+     ZZ x1, x2, x3, x4;
+     double t;
+***************
+*** 336,342 ****
+        mul(x4, x2, x3);
+     t = GetTime()-t;
+  
+!    cerr << "time for 1024-bit mul: " << t*10 << "us";
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+--- 331,337 ----
+        mul(x4, x2, x3);
+     t = GetTime()-t;
+  
+!    printf("time for 1024-bit mul: %fus", t*10);
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+***************
+*** 347,358 ****
+           mul(x4, x2, x3);
+        t = GetTime()-t;
+  
+!       cerr << " (" << (t*10) << "us without GMP)"; 
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    cerr << "\n";
+  
+     rem(x2, x4, x1);
+  
+--- 342,353 ----
+           mul(x4, x2, x3);
+        t = GetTime()-t;
+  
+!       printf(" (%fus without GMP",(t*10)); 
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    printf("\n");
+  
+     rem(x2, x4, x1);
+  
+***************
+*** 361,367 ****
+        rem(x2, x4, x1);
+     t = GetTime()-t;
+  
+!    cerr << "time for 2048/1024-bit rem: " << t*10 << "us";
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+--- 356,362 ----
+        rem(x2, x4, x1);
+     t = GetTime()-t;
+  
+!    printf("time for 2048/1024-bit rem: %fus", t*10);
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+***************
+*** 371,382 ****
+        for (i = 0; i < 100000; i++)
+           rem(x2, x4, x1);
+        t = GetTime()-t;
+!       cerr << " (" << (t*10) << "us without GMP)"; 
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    cerr << "\n";
+     
+  
+     GenPrime(p, 1024);
+--- 366,377 ----
+        for (i = 0; i < 100000; i++)
+           rem(x2, x4, x1);
+        t = GetTime()-t;
+!       printf(" (%fus without GMP", (t*10));
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    printf("\n");
+     
+  
+     GenPrime(p, 1024);
+***************
+*** 390,396 ****
+        InvMod(x2, x1, p);
+     t = GetTime()-t;
+  
+!    cerr << "time for 1024-bit modular inverse: " << t*1000 << "us";
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+--- 385,391 ----
+        InvMod(x2, x1, p);
+     t = GetTime()-t;
+  
+!    printf("time for 1024-bit modular inverse: %fus", t*1000);
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+***************
+*** 400,411 ****
+        for (i = 0; i < 1000; i++)
+           InvMod(x2, x1, p);
+        t = GetTime()-t;
+!          cerr << " (" << (t*1000) << "us without GMP)"; 
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    cerr << "\n";
+  
+  
+  
+--- 395,406 ----
+        for (i = 0; i < 1000; i++)
+           InvMod(x2, x1, p);
+        t = GetTime()-t;
+!          printf(" (%fus without GMP", (t*1000));
+  
+        _ntl_gmp_hack = 1;
+     }
+  
+!    printf("\n");
+  
+  
+  
+***************
+*** 427,434 ****
+     for (i = 0; i < 20; i++) mul(j3, j1, j2);
+     t = GetTime()-t;
+  
+!    cerr << "time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: ";
+!    cerr << (t/20) << "s";
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+--- 422,428 ----
+     for (i = 0; i < 20; i++) mul(j3, j1, j2);
+     t = GetTime()-t;
+  
+!    printf("time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: %fs",(t/20));
+  
+     if (_ntl_gmp_hack) {
+        _ntl_gmp_hack = 0;
+***************
+*** 440,452 ****
+        for (i = 0; i < 20; i++) mul(j3, j1, j2);
+        t = GetTime()-t;
+  
+!       cerr << " (" << (t/20) << "s without GMP)";
+        _ntl_gmp_hack = 1;
+     }
+  
+!    cerr << "\n";
+  
+     GF2X_time();
+  
+!    return 0;
+  }
+--- 434,447 ----
+        for (i = 0; i < 20; i++) mul(j3, j1, j2);
+        t = GetTime()-t;
+  
+!       printf(" (%fs without GMP", (t/20));
+        _ntl_gmp_hack = 1;
+     }
+  
+!    printf("\n");
+  
+     GF2X_time();
+  
+! return 0;
+!    //exit(0);
+  }
+diff -crB ../ntl-5.5.2/src/RRTest.c ./src/RRTest.c
+*** ../ntl-5.5.2/src/RRTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/RRTest.c	2010-07-19 11:51:01.000000000 -0400
+***************
+*** 1,18 ****
+  
+  #include <NTL/mat_RR.h>
+  
+  NTL_CLIENT
+  
+! int main()
+  {
+     mat_RR A;
+     vec_RR x, y, z;
+     RR d;
+  
+     RR::SetPrecision(200);
+  
+!    cin >> A;
+!    cin >> y;
+  
+     solve(d, x, A, y);
+  
+--- 1,28 ----
+  
+  #include <NTL/mat_RR.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+! int main(int argc, char** argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++    outFile.open(argv[2]);
++ 
+     mat_RR A;
+     vec_RR x, y, z;
+     RR d;
+  
+     RR::SetPrecision(200);
+  
+!    inFile >> A;
+!    inFile >> y;
+  
+     solve(d, x, A, y);
+  
+***************
+*** 21,27 ****
+  
+     z = x*A - y;
+  
+!    cout << d << "\n";
+!    cout << x << "\n";
+!    cout << z << "\n";
+  }
+--- 31,40 ----
+  
+     z = x*A - y;
+  
+!    outFile << d << "\n";
+!    outFile << x << "\n";
+!    outFile << z << "\n";
+!    outFile.close();
+! 
+!    return 0;
+  }
+diff -crB ../ntl-5.5.2/src/subset.c ./src/subset.c
+*** ../ntl-5.5.2/src/subset.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/subset.c	2010-07-19 11:57:36.000000000 -0400
+***************
+*** 18,51 ****
+  
+  
+  
+! int main()
+  {
+     RR::SetPrecision(150);
+     long n, b, size;
+  
+!    cerr << "n: ";
+!    cin >> n;
+  
+!    cerr << "b: ";
+!    cin >> b;
+  
+!    cerr << "size: ";
+!    cin >> size;
+  
+!    cerr << "prune: ";
+!    long prune;
+!    cin >> prune;
+  
+     ZZ seed;
+!    cerr << "seed: ";
+!    cin >> seed;
+  
+     if (seed != 0)
+        SetSeed(seed);
+  
+     char alg;
+!    cerr << "alg [fqQxr]: ";
+!    cin >> alg;
+  
+     double TotalTime = 0;
+     long TotalSucc = 0;
+--- 18,50 ----
+  
+  
+  
+! int main(int argc, char** argv)
+  {
+     RR::SetPrecision(150);
+     long n, b, size;
+  
+!    n = 40;//(long) atoi(argv[1]);
+!    printf("n: %i\n", n);
+  
+!    b = 40;//(long) atoi(argv[2]);
+!    printf("b: %i\n", b);
+  
+!    size = 20;//(long) atoi(argv[3]);
+!    printf("size: %i\n", size);
+  
+!    long prune = 10;//(long) atoi(argv[4]);
+!    printf("prune: %i\n", prune);
+  
+     ZZ seed;
+!    seed << 999999; /*(long) atoi(argv[5])*/;
+!    printf("seed: 999999\n");
+  
+     if (seed != 0)
+        SetSeed(seed);
+  
+     char alg;
+!    alg = *argv[6];
+!    printf("alg [fqQxr]: %c\n", alg);
+  
+     double TotalTime = 0;
+     long TotalSucc = 0;
+***************
+*** 138,152 ****
+        TotalSucc += succ;
+  
+        if (succ)
+!          cerr << "+";
+        else
+!          cerr << "-";
+     }
+  
+!    cerr << "\n";
+  
+!    cerr << "number of success: " << TotalSucc << "\n";
+!    cerr << "average time: " << TotalTime/20 << "\n";
+  
+     return 0;
+  }
+--- 137,151 ----
+        TotalSucc += succ;
+  
+        if (succ)
+!          printf("+");
+        else
+!          printf("-");
+     }
+  
+!    printf("\n");
+  
+!    printf("number of success: %f\n", TotalSucc);
+!    printf("average time: %f\n", TotalTime/20);
+  
+     return 0;
+  }
+diff -crB ../ntl-5.5.2/src/TestGetTime.c ./src/TestGetTime.c
+*** ../ntl-5.5.2/src/TestGetTime.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/TestGetTime.c	2010-07-23 13:01:11.000000000 -0400
+***************
+*** 26,38 ****
+     long i, j, k;
+     double t0, t1;
+  
+!    fprintf(stderr, "running");
+  
+!    x = atol(argv[1]); /* = 1 */
+  
+!    n = atol(argv[2]); /* = 1048576 = 2^20 */
+  
+!    m = atol(argv[3]); /* = 1048575 = 2^20 - 1 */
+  
+     k = -1;
+     t0 = _ntl_GetTime();
+--- 26,38 ----
+     long i, j, k;
+     double t0, t1;
+  
+!    printf("running");
+  
+!    x = 1;//atol(argv[1]); /* = 1 */
+  
+!    n = 1048576;//atol(argv[2]); /* = 1048576 = 2^20 */
+  
+!    m = 1048575;//atol(argv[3]); /* = 1048575 = 2^20 - 1 */
+  
+     k = -1;
+     t0 = _ntl_GetTime();
+***************
+*** 43,58 ****
+        for (j = 0; j < n; j++) 
+           a = (a + x) & m;
+  
+!       if (a == 17) return -2; /* keeps the compiler honest! */
+  
+        t1 = _ntl_GetTime();
+!       if (t1 > t0) { fprintf(stderr, "\n"); return 0; }
+  
+        if ((i % 10) == 0) {
+!          fprintf(stderr, ".");
+        }
+     }
+  
+!    fprintf(stderr, "\n");
+     return -1;
+  }
+--- 43,58 ----
+        for (j = 0; j < n; j++) 
+           a = (a + x) & m;
+  
+!       if (a == 17) {printf("\n-2: Compiler Error\n"); return -2;} /* keeps the compiler honest! */
+  
+        t1 = _ntl_GetTime();
+!       if (t1 > t0) { printf("\n0\n"); return 0; }
+  
+        if ((i % 10) == 0) {
+!          printf(".");
+        }
+     }
+  
+!    printf("\n-1\n");
+     return -1;
+  }
+diff -crB ../ntl-5.5.2/src/TestScript ./src/TestScript
+*** ../ntl-5.5.2/src/TestScript	2009-08-14 08:53:11.000000000 -0400
+--- ./src/TestScript	2010-07-23 13:55:24.000000000 -0400
+***************
+*** 4,11 ****
+  echo "making CanZassTest"
+  make CanZassTest
+  echo "running CanZassTest"
+! ./CanZassTest < CanZassTestIn > XXX
+  sh RemoveProg CanZassTest
+  if diff XXX CanZassTestOut
+  then
+  echo "CanZassTest OK"
+--- 4,15 ----
+  echo "making CanZassTest"
+  make CanZassTest
+  echo "running CanZassTest"
+! adb push CanZassTest $1/
+! adb push CanZassTestIn $1/
+! adb shell $1/CanZassTest "$1/CanZassTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg CanZassTest
++ sh AndroidRemoveProg $1/CanZassTest $1/CanZassTestIn
+  if diff XXX CanZassTestOut
+  then
+  echo "CanZassTest OK"
+***************
+*** 18,25 ****
+  echo "making BerlekampTest"
+  make BerlekampTest
+  echo "running BerlekampTest"
+! ./BerlekampTest < BerlekampTestIn > XXX
+  sh RemoveProg BerlekampTest
+  if diff XXX BerlekampTestOut
+  then
+  echo "BerlekampTest OK"
+--- 22,33 ----
+  echo "making BerlekampTest"
+  make BerlekampTest
+  echo "running BerlekampTest"
+! adb push BerlekampTest $1/
+! adb push BerlekampTestIn $1/
+! adb shell $1/BerlekampTest "$1/BerlekampTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg BerlekampTest
++ sh AndroidRemoveProg $1/BerlekampTest $1/BerlekampTestIn
+  if diff XXX BerlekampTestOut
+  then
+  echo "BerlekampTest OK"
+***************
+*** 33,40 ****
+  echo "making ZZXFacTest"
+  make ZZXFacTest
+  echo "running ZZXFacTest"
+! ./ZZXFacTest < ZZXFacTestIn > XXX
+  sh RemoveProg ZZXFacTest
+  if diff XXX ZZXFacTestOut
+  then
+  echo "ZZXFacTest OK"
+--- 41,52 ----
+  echo "making ZZXFacTest"
+  make ZZXFacTest
+  echo "running ZZXFacTest"
+! adb push ZZXFacTest $1/
+! adb push ZZXFacTestIn $1/
+! adb shell $1/ZZXFacTest "$1/ZZXFacTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg ZZXFacTest
++ sh AndroidRemoveProg $1/ZZXFacTest $1/ZZXFacTestIn
+  if diff XXX ZZXFacTestOut
+  then
+  echo "ZZXFacTest OK"
+***************
+*** 47,70 ****
+  echo "making MoreFacTest"
+  make MoreFacTest
+  echo "running MoreFacTest"
+! ./MoreFacTest < MoreFacTestIn 
+  sh RemoveProg MoreFacTest
+  
+  echo
+  echo "---------------------------------"
+  echo "making GF2XTest"
+  make GF2XTest
+  echo "running GF2XTest"
+! ./GF2XTest
+  sh RemoveProg GF2XTest
+  
+  echo
+  echo "---------------------------------"
+  echo "making GF2EXTest"
+  make GF2EXTest
+  echo "running GF2EXTest"
+! ./GF2EXTest
+  sh RemoveProg GF2EXTest
+  
+  
+  echo
+--- 59,89 ----
+  echo "making MoreFacTest"
+  make MoreFacTest
+  echo "running MoreFacTest"
+! adb push MoreFacTest $1/
+! adb push MoreFacTestIn $1/
+! adb shell $1/MoreFacTest "$1/MoreFacTestIn" "$1/XXX"
+  sh RemoveProg MoreFacTest
++ sh AndroidRemoveProg $1/MoreFacTest $1/MoreFacTestIn
+  
+  echo
+  echo "---------------------------------"
+  echo "making GF2XTest"
+  make GF2XTest
+  echo "running GF2XTest"
+! adb push GF2XTest $1/
+! adb shell $1/GF2XTest
+  sh RemoveProg GF2XTest
++ sh AndroidRemoveProg $1/GF2XTest
+  
+  echo
+  echo "---------------------------------"
+  echo "making GF2EXTest"
+  make GF2EXTest
+  echo "running GF2EXTest"
+! adb push GF2EXTest $1/
+! adb shell $1/GF2EXTest
+  sh RemoveProg GF2EXTest
++ sh AndroidRemoveProg $1/GF2EXTest
+  
+  
+  echo
+***************
+*** 72,79 ****
+  echo "making MatrixTest"
+  make MatrixTest
+  echo "running MatrixTest"
+! ./MatrixTest < MatrixTestIn > XXX
+  sh RemoveProg MatrixTest
+  if diff XXX MatrixTestOut
+  then
+  echo "MatrixTest OK"
+--- 91,102 ----
+  echo "making MatrixTest"
+  make MatrixTest
+  echo "running MatrixTest"
+! adb push MatrixTest $1/
+! adb push MatrixTestIn $1/
+! adb shell $1/MatrixTest "$1/MatrixTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg MatrixTest
++ sh AndroidRemoveProg $1/MatrixTest $1/MatrixTestIn
+  if diff XXX MatrixTestOut
+  then
+  echo "MatrixTest OK"
+***************
+*** 86,93 ****
+  echo "making CharPolyTest"
+  make CharPolyTest
+  echo "running CharPolyTest"
+! ./CharPolyTest < CharPolyTestIn > XXX
+  sh RemoveProg CharPolyTest
+  if diff XXX CharPolyTestOut
+  then
+  echo "CharPolyTest OK"
+--- 109,120 ----
+  echo "making CharPolyTest"
+  make CharPolyTest
+  echo "running CharPolyTest"
+! adb push CharPolyTest $1/
+! adb push CharPolyTestIn $1/
+! adb shell $1/CharPolyTest "$1/CharPolyTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg CharPolyTest
++ sh AndroidRemoveProg $1/CharPolyTest $1/CharPolyTestIn
+  if diff XXX CharPolyTestOut
+  then
+  echo "CharPolyTest OK"
+***************
+*** 100,107 ****
+  echo "making BitMatTest"
+  make BitMatTest
+  echo "running BitMatTest"
+! ./BitMatTest
+  sh RemoveProg BitMatTest
+  
+  
+  echo
+--- 127,136 ----
+  echo "making BitMatTest"
+  make BitMatTest
+  echo "running BitMatTest"
+! adb push BitMatTest $1/
+! adb shell $1/BitMatTest
+  sh RemoveProg BitMatTest
++ sh AndroidRemoveProg $1/BitMatTest
+  
+  
+  echo
+***************
+*** 109,116 ****
+  echo "making RRTest"
+  make RRTest
+  echo "running RRTest"
+! ./RRTest < RRTestIn > XXX
+  sh RemoveProg RRTest
+  if diff XXX RRTestOut
+  then
+  echo "RRTest OK"
+--- 138,149 ----
+  echo "making RRTest"
+  make RRTest
+  echo "running RRTest"
+! adb push RRTest $1/
+! adb push RRTestIn $1/
+! adb shell $1/RRTest "$1/RRTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg RRTest
++ sh AndroidRemoveProg $1/RRTest $1/RRTestIn
+  if diff XXX RRTestOut
+  then
+  echo "RRTest OK"
+***************
+*** 123,130 ****
+  echo "making QuadTest"
+  make QuadTest
+  echo "running QuadTest"
+! ./QuadTest < QuadTestIn > XXX
+  sh RemoveProg QuadTest
+  if diff XXX QuadTestOut
+  then
+  echo "QuadTest OK"
+--- 156,167 ----
+  echo "making QuadTest"
+  make QuadTest
+  echo "running QuadTest"
+! adb push QuadTest $1/
+! adb push QuadTestIn $1/
+! adb shell $1/QuadTest "$1/QuadTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg QuadTest
++ sh AndroidRemoveProg $1/QuadTest $1/QuadTestIn
+  if diff XXX QuadTestOut
+  then
+  echo "QuadTest OK"
+***************
+*** 138,145 ****
+  echo "making LLLTest"
+  make LLLTest
+  echo "running LLLTest"
+! ./LLLTest < LLLTestIn > XXX
+  sh RemoveProg LLLTest
+  if diff XXX LLLTestOut
+  then
+  echo "LLLTest OK"
+--- 175,186 ----
+  echo "making LLLTest"
+  make LLLTest
+  echo "running LLLTest"
+! adb push LLLTest $1/
+! adb push LLLTestIn $1/
+! adb shell $1/LLLTest "$1/LLLTestIn" "$1/XXX"
+! adb pull $1/XXX
+  sh RemoveProg LLLTest
++ sh AndroidRemoveProg $1/LLLTest $1/LLLTestIn
+  if diff XXX LLLTestOut
+  then
+  echo "LLLTest OK"
+***************
+*** 152,166 ****
+  echo "making subset"
+  make subset
+  echo "subset 40 40 20 10 999999 f"
+! ./subset <<here
+    40 40 20 10 999999 f
+  here
+  echo "subset 40 40 20 10 999999 q"
+! ./subset <<here
+    40 40 20 10 999999 q
+  here
+  
+  sh RemoveProg subset
+  
+  
+  echo
+--- 193,209 ----
+  echo "making subset"
+  make subset
+  echo "subset 40 40 20 10 999999 f"
+! adb push subset $1/
+! adb shell $1/subset <<here
+    40 40 20 10 999999 f
+  here
+  echo "subset 40 40 20 10 999999 q"
+! adb shell $1/subset <<here
+    40 40 20 10 999999 q
+  here
+  
+  sh RemoveProg subset
++ sh AndroidRemoveProg $1/subset
+  
+  
+  echo
+***************
+*** 168,183 ****
+  echo "making ZZ_pEXTest"
+  make ZZ_pEXTest
+  echo "running ZZ_pEXTest"
+! ./ZZ_pEXTest 
+  sh RemoveProg ZZ_pEXTest
+! 
+  
+  echo
+  echo "---------------------------------"
+  echo "making lzz_pEXTest"
+  make lzz_pEXTest
+  echo "running lzz_pEXTest"
+! ./lzz_pEXTest 
+  sh RemoveProg lzz_pEXTest
+  
+  exit 0
+--- 211,232 ----
+  echo "making ZZ_pEXTest"
+  make ZZ_pEXTest
+  echo "running ZZ_pEXTest"
+! adb push ZZ_pEXTest $1/
+! adb shell $1/ZZ_pEXTest 
+  sh RemoveProg ZZ_pEXTest
+! sh AndroidRemoveProg $1/ZZ_pEXTest
+  
+  echo
+  echo "---------------------------------"
+  echo "making lzz_pEXTest"
+  make lzz_pEXTest
+  echo "running lzz_pEXTest"
+! adb push lzz_pEXTest $1/
+! adb shell $1/lzz_pEXTest 
+  sh RemoveProg lzz_pEXTest
++ sh AndroidRemoveProg $1/lzz_pEXTest
++ 
++ sh RemoveProg XXX
++ sh AndroidRemoveProg $1/XXX
+  
+  exit 0
+diff -crB ../ntl-5.5.2/src/ZZ_pEXTest.c ./src/ZZ_pEXTest.c
+*** ../ntl-5.5.2/src/ZZ_pEXTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/ZZ_pEXTest.c	2010-07-16 18:27:08.000000000 -0400
+***************
+*** 33,39 ****
+     long i;
+     for (i = 0; i < 5; i++) {
+        long n = RandomBnd(20)+1;
+!       cerr << n << " ";
+  
+        random(f, n);
+        SetCoeff(f, n);
+--- 33,39 ----
+     long i;
+     for (i = 0; i < 5; i++) {
+        long n = RandomBnd(20)+1;
+!       printf("%i ",n);
+  
+        random(f, n);
+        SetCoeff(f, n);
+***************
+*** 41,47 ****
+        v = CanZass(f);
+  
+        g = mul(v);
+!       if (f != g) cerr << "oops1\n";
+  
+        long i;
+        for (i = 0; i < v.length(); i++)
+--- 41,47 ----
+        v = CanZass(f);
+  
+        g = mul(v);
+!       if (f != g) printf("oops1\n");
+  
+        long i;
+        for (i = 0; i < v.length(); i++)
+***************
+*** 51,57 ****
+  
+     }
+  
+!    cerr << "\n";
+  
+!    cerr << "ZZ_pEXTest OK\n";
+  }
+--- 51,57 ----
+  
+     }
+  
+!    printf("\n");
+  
+!    printf("ZZ_pEXTest OK\n");
+  }
+diff -crB ../ntl-5.5.2/src/ZZXFacTest.c ./src/ZZXFacTest.c
+*** ../ntl-5.5.2/src/ZZXFacTest.c	2009-08-14 08:53:11.000000000 -0400
+--- ./src/ZZXFacTest.c	2010-07-19 11:49:54.000000000 -0400
+***************
+*** 1,4 ****
+--- 1,5 ----
+  #include <NTL/ZZXFactoring.h>
++ #include <fstream>
+  
+  NTL_CLIENT
+  
+***************
+*** 40,51 ****
+  
+  int main(int argc, char **argv)
+  {
+     ZZX f1, f;
+  
+!    if (argc > 1) 
+!       ZZXFac_MaxPrune = atoi(argv[1]);
+  
+!    cin >> f;
+  
+     vec_pair_ZZX_long factors;
+     ZZ c;
+--- 41,64 ----
+  
+  int main(int argc, char **argv)
+  {
++    std::fstream inFile;
++    std::ofstream outFile;
++    inFile.open(argv[1]);
++    if (!inFile) {
++        printf("cannot read file");
++        exit(1);
++    }
++ 
+     ZZX f1, f;
+  
+!    if (argc > 2) 
+!       ZZXFac_MaxPrune = atoi(argv[2]);
+! 
+!    inFile >> f;
+!    inFile.close();
+!    printf("Reading File Done");
+  
+!    outFile.open (argv[2]);
+  
+     vec_pair_ZZX_long factors;
+     ZZ c;
+***************
+*** 56,62 ****
+     factor(c, factors, f, 0);
+     t = GetTime()-t;
+  
+!    cerr << "total time: " << t << "\n";
+  
+  
+     mul(f1, factors);
+--- 69,75 ----
+     factor(c, factors, f, 0);
+     t = GetTime()-t;
+  
+!    printf("total time: %f\n", t );
+  
+  
+     mul(f1, factors);
+***************
+*** 69,76 ****
+  
+     sort(factors);
+  
+!    cout << c << "\n";
+!    cout << factors << "\n";
+  
+     return 0;
+  }
+--- 82,89 ----
+  
+     sort(factors);
+  
+!    outFile << c << "\n";
+!    outFile << factors << "\n";
+  
+     return 0;
+  }

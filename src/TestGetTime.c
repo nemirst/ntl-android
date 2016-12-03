@@ -24,13 +24,13 @@ int main(int argc, char **argv)
    long i, j, k;
    double t0, t1;
 
-   fprintf(stderr, "running");
+   printf("running");
 
-   x = atol(argv[1]); /* = 1 */
+   x = 1;//atol(argv[1]); /* = 1 */
 
-   n = atol(argv[2]); /* = 1048576 = 2^20 */
+   n = 1048576;//atol(argv[2]); /* = 1048576 = 2^20 */
 
-   m = atol(argv[3]); /* = 1048575 = 2^20 - 1 */
+   m = 1048575;//atol(argv[3]); /* = 1048575 = 2^20 - 1 */
 
    k = -1;
    t0 = _ntl_GetTime();
@@ -41,16 +41,16 @@ int main(int argc, char **argv)
       for (j = 0; j < n; j++) 
          a = (a + x) & m;
 
-      if (a == 17) return -2; /* keeps the compiler honest! */
+      if (a == 17) {printf("\n-2: Compiler Error\n"); return -2;} /* keeps the compiler honest! */
 
       t1 = _ntl_GetTime();
-      if (t1 > t0) { fprintf(stderr, "\n"); return 0; }
+      if (t1 > t0) { printf("\n0\n"); return 0; }
 
       if ((i % 10) == 0) {
-         fprintf(stderr, ".");
+         printf(".");
       }
    }
 
-   fprintf(stderr, "\n");
+   printf("\n-1\n");
    return -1;
 }

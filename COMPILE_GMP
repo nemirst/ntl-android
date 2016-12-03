@@ -1,0 +1,28 @@
+##############################################################################
+# Compiling GMP for the Android
+# Document Author: Idan Warsawski (idan@bu.edu)
+# Revision Date: 2010.08.20
+###############################################################################
+These commands have been tested with GMP version 5.0.1
+
+Run one of the following configure commands followed by `make all` and 
+`make install` to compile GMP for the Android Phone.
+You will need to set NDK_DIR as an environment variable and add the toolchain
+bin directory added to your path.
+e.g /home/idan/Desktop/AndroidDev/android-ndk-r4/build/prebuilt/linux-x86/arm-eabi-4.4.0/bin
+
+You can also edit the --prefix to change the library install directory.
+
+NOTE: There is a full GMP test suite, you can transfer and run these on the 
+Android phone, however this is beyond the scope of this document. NTL's self check
+should discover any flaws with the GMP compile.
+
+For ARMv7 (armeabi-v7a)
+
+./configure --prefix=$HOME/android --disable-shared --host=arm-none-linux CC=arm-eabi-gcc LD=arm-eabi-ld AR=arm-eabi-ar RANLIB=arm-eabi-ranlib CFLAGS="-nostdlib -Bdynamic -Wl,-dynamic-linker,/system/bin/linker -Wl,--gc-sections -Wl,-z,nocopyreloc -I$NDK_DIR/build/platforms/android-8/arch-arm/usr/include -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Wl,-T,$NDK_DIR/build/prebuilt/linux-x86/arm-eabi-4.4.0/arm-eabi/lib/ldscripts/armelf.x -Wl,-rpath-link=$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib -L$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib -DANDROID -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -Wa,--noexecstack -march=armv7-a -mfloat-abi=softfp -mfpu=vfp" LDFLAGS="$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib/crtbegin_dynamic.o $NDK_DIR/build/prebuilt/linux-x86/arm-eabi-4.4.0/lib/gcc/arm-eabi/4.4.0/libgcc.a $NDK_DIR/build/platforms/android-8/arch-arm/usr/lib/crtend_android.o" LIBS="-lc -lm" CXXCPP="arm-eabi-g++ -E" CXX="arm-eabi-g++" LD="arm-eabi-ld" NM="arm-eabi-nm"
+
+For ARMv5 (armeabi)
+
+./configure --prefix=$HOME/android --host=arm-none-linux CC=arm-eabi-gcc LD=arm-eabi-ld AR=arm-eabi-ar RANLIB=arm-eabi-ranlib CFLAGS="-nostdlib -Bdynamic -Wl,-dynamic-linker,/system/bin/linker -Wl,--gc-sections -Wl,-z,nocopyreloc -I$NDK_DIR/build/platforms/android-8/arch-arm/usr/include -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -Wl,-T,$NDK_DIR/build/prebuilt/linux-x86/arm-eabi-4.4.0/arm-eabi/lib/ldscripts/armelf.x -Wl,-rpath-link=$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib -L$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib -DANDROID  -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -Wa,--noexecstack -march=armv5te -mtune=xscale -msoft-float" LDFLAGS="$NDK_DIR/build/platforms/android-8/arch-arm/usr/lib/crtbegin_dynamic.o $NDK_DIR/build/prebuilt/linux-x86/arm-eabi-4.4.0/lib/gcc/arm-eabi/4.4.0/libgcc.a $NDK_DIR/build/platforms/android-8/arch-arm/usr/lib/crtend_android.o" LIBS="-lc -lm" CXXCPP="arm-eabi-g++ -E" CXX="arm-eabi-g++" LD="arm-eabi-ld" NM="arm-eabi-nm" 
+
+
