@@ -327,7 +327,7 @@ CFLAGS = -I$(PLATFORM_DIR)/usr/include -fpic -ffunction-sections -funwind-tables
 TARGET_CRTBEGIN_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtbegin_dynamic.o
 TARGET_CRTEND_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtend_android.o
 
-TARGET_LIBGCC := $(shell $(CC) -print-libgcc-file-name)
+TARGET_LIBGCC := $(shell $(CXX) -print-libgcc-file-name)
 TARGET_LDLIBS := -Wl,-rpath-link=$(PLATFORM_DIR)/usr/lib
 TARGET_LDLIBS += -Wl,-rpath-link=$(NDK_DIR)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi
 
@@ -348,7 +348,8 @@ else
     CFLAGS += -march=armv5te -mtune=xscale -msoft-float
     TARGET_LDFLAGS = -Wl,--no-undefined -Wl,-z,noexecstack
 endif
-CFLAGS += $(CXXFLAGS)
+TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi
+CFLAGS += $(CXXFLAGS) -frtti -fexceptions -DANDROID
 
 COMPILE = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
