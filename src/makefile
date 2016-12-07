@@ -14,7 +14,7 @@ TARGET_ARCH_ABI=armeabi
 CXX=$(TOOLCHAIN_PREFIX)-g++
 # A C++ compiler, e.g., g++, CC, xlC
 
-# CXXFLAGS=-g -O2
+CXXFLAGS=-g -O2
 # Flags for the C++ compiler
 
 # CXXAUTOFLAGS=
