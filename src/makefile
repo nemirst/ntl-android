@@ -5,11 +5,20 @@
 #
 ###############################################################
 
-NDK_DIR=/home/cppko/Android/Sdk/ndk-bundle
 PHONE_TMP_DIR=/data/local/tmp/test_ntl
-PLATFORM=android-19
+# cppkonsultants: manually change only this variable to choose different ABI.
+
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+TOOLCHAIN_PREFIX=aarch64-linux-android
+# When building with Android Studio for arm64-v8a build system automatically
+# raises version to android-21 if it's lower. Using same behavior here.
+PLATFORM=android-21
+PLATFORM_DIR=$(NDK_DIR)/platforms/$(PLATFORM)/arch-arm64
+else
 TOOLCHAIN_PREFIX=arm-linux-androideabi
-TARGET_ARCH_ABI=armeabi
+PLATFORM=android-19
+PLATFORM_DIR=$(NDK_DIR)/platforms/$(PLATFORM)/arch-arm
+endif
 
 CXX=$(TOOLCHAIN_PREFIX)-g++
 # A C++ compiler, e.g., g++, CC, xlC
@@ -42,7 +51,7 @@ CPPFLAGS=
 LIBTOOL=libtool
 # libtool command
 
-DEF_PREFIX=/home/cppko/ntl_android_build
+DEF_PREFIX=/usr/local
 
 PREFIX=$(DEF_PREFIX)
 LIBDIR=$(PREFIX)/lib
@@ -316,11 +325,8 @@ SFILES=$(SFI3)
 NTL_INCLUDE = -I../include -I.
 # NTL needs this to find its include files
 
-PLATFORM_DIR=$(NDK_DIR)/platforms/$(PLATFORM)/arch-arm
-
 CFLAGS = -I$(PLATFORM_DIR)/usr/include -fpic -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -fomit-frame-pointer \
     -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 \
-    -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ \
     -Wno-psabi -Wa,--noexecstack \
     --sysroot=$(PLATFORM_DIR) -isystem $(NDK_DIR)/sources/cxx-stl/llvm-libc++/include -isystem $(NDK_DIR)/sources/android/support/include -isystem $(NDK_DIR)/sources/cxx-stl/llvm-libc++abi/include
 
@@ -329,8 +335,6 @@ TARGET_CRTEND_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtend_android.o
 
 TARGET_LIBGCC := $(shell $(CXX) -print-libgcc-file-name)
 TARGET_LDLIBS := -Wl,-rpath-link=$(PLATFORM_DIR)/usr/lib
-TARGET_LDLIBS += -Wl,-rpath-link=$(NDK_DIR)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi
-
 
 # cppkonsultants: commented out
 # TARGET_CXXLIBS := $(shell $(CXX) -print-file-name=libstdc++.a)
@@ -342,18 +346,22 @@ PRIVATE_CLIBS = -lc -lm
 NTL_INCLUDE = -I../include -I.
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-    CFLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=vfp
-    TARGET_LDFLAGS = -Wl,--fix-cortex-a8 -Wl,--no-undefined -Wl,-z,noexecstack
+    CFLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb
+    TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker -Wl,--fix-cortex-a8 -Wl,--no-undefined -Wl,-z,noexecstack
+    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a
+else ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+    CFLAGS +=
+    TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker64 -Wl,--no-undefined -Wl,-z,noexecstack -Wl,-m,aarch64linux
+    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/arm64-v8a
 else
-    CFLAGS += -march=armv5te -mtune=xscale -msoft-float
-    TARGET_LDFLAGS = -Wl,--no-undefined -Wl,-z,noexecstack
+    CFLAGS += -march=armv5te -mtune=xscale -msoft-float -mthumb
+    TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker -Wl,--no-undefined -Wl,-z,noexecstack
+    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/armeabi
 endif
-TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi
 CFLAGS += $(CXXFLAGS) -frtti -fexceptions -DANDROID
 
 COMPILE = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
-    -Wl,-dynamic-linker,/system/bin/linker \
     -Wl,--gc-sections \
     -Wl,-z,nocopyreloc \
     $(CFLAGS) \
@@ -361,11 +369,11 @@ COMPILE = $(CXX) $(NTL_INCLUDE) \
 
 LINK = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
-    -Wl,-dynamic-linker,/system/bin/linker \
     -Wl,--gc-sections \
     -Wl,-z,nocopyreloc \
     -pie \
     $(CFLAGS) \
+    $(TARGET_LDFLAGS) \
     $(TARGET_LDLIBS) \
     -L$(PLATFORM_DIR)/usr/lib \
     $(TARGET_LIBGCC) \
@@ -397,6 +405,7 @@ all:
 setup1:
 	$(COMPILE) MakeDescAux.c
 	$(LINK) -o MakeDesc MakeDesc.c MakeDescAux.o
+	adb shell mkdir -p $(PHONE_TMP_DIR)
 	adb push MakeDesc $(PHONE_TMP_DIR)/MakeDesc
 	adb shell "cd $(PHONE_TMP_DIR) && $(PHONE_TMP_DIR)/MakeDesc"
 	adb pull $(PHONE_TMP_DIR)/mach_desc.h
@@ -406,6 +415,7 @@ setup1:
 # setup2 does some dynamic checks for GetTime, GetPID, __builtin_clzl, and LL types 
 
 setup2:
+	adb shell mkdir -p $(PHONE_TMP_DIR)
 	sh MakeGetTime "$(LINK)" "$(PHONE_TMP_DIR)"
 	sh MakeGetPID "$(LINK)" "$(PHONE_TMP_DIR)"
 	sh MakeCheckCLZL "$(LINK)" "$(PHONE_TMP_DIR)"
@@ -418,6 +428,7 @@ setup2:
 
 setup3:
 	$(LINK) $(GMP_OPT_INCDIR) -o gen_gmp_aux gen_gmp_aux.c $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB)
+	adb shell mkdir -p $(PHONE_TMP_DIR)
 	adb push gen_gmp_aux $(PHONE_TMP_DIR)/gen_gmp_aux
 	adb shell "cd $(PHONE_TMP_DIR) && ./gen_gmp_aux" > ../include/NTL/gmp_aux.h
 
@@ -467,6 +478,7 @@ CheckPCLMUL: CheckPCLMUL.c
 
 check:
 	sh RemoveProg $(PROGS)
+	adb shell mkdir -p $(PHONE_TMP_DIR)
 	sh AndroidRemoveProg $(PHONE_TMP_DIR)/$(PROGS) 
 	make QuickTest
 	adb push QuickTest $(PHONE_TMP_DIR)/QuickTest
@@ -533,7 +545,8 @@ clobber:
 	cp ../include/NTL/have_builtin_clzl_no.h ../include/NTL/have_builtin_clzl.h
 	rm -f ../include/NTL/gmp_aux.h
 	sh RemoveProg $(PROGS) MakeDesc TestGetTime TestGetPID gen_gmp_aux
-	sh AndroidRemoveProg $(PHONE_TMP_DIR)/$(PROGS) $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime  $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetPID $(PHONE_TMP_DIR)/gen_gmp_aux
+#	sh AndroidRemoveProg $(PHONE_TMP_DIR)/$(PROGS) $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime  $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetPID $(PHONE_TMP_DIR)/gen_gmp_aux
+	adb shell rm -r $(PHONE_TMP_DIR)
 	rm -f *.o
 	rm -rf small
 	rm -f cfileout mfileout
@@ -542,7 +555,8 @@ clobber:
 
 clean:
 	sh RemoveProg MakeDesc TestGetTime TestGetPID gen_gmp_aux
-	sh AndroidRemoveProg $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime $(PHONE_TMP_DIR)/TestGetPID $(PHONE_TMP_DIR)/gen_gmp_aux
+#	sh AndroidRemoveProg $(PHONE_TMP_DIR)/MakeDesc $(PHONE_TMP_DIR)/TestGetTime $(PHONE_TMP_DIR)/TestGetPID $(PHONE_TMP_DIR)/gen_gmp_aux
+	adb shell rm -r $(PHONE_TMP_DIR)
 	rm -f *.o 
 	rm -rf small
 # 	- $(LIBTOOL) --mode=clean rm -f libntl.la *.lo #LSHAR
