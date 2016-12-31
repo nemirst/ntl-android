@@ -193,13 +193,9 @@ echo "making subset"
 make subset
 echo "subset 40 40 20 10 999999 f"
 adb push subset $1/
-adb shell $1/subset <<here
-  40 40 20 10 999999 f
-here
+adb shell $1/subset 40 40 20 10 999999 f
 echo "subset 40 40 20 10 999999 q"
-adb shell $1/subset <<here
-  40 40 20 10 999999 q
-here
+adb shell $1/subset 40 40 20 10 999999 q
 
 sh RemoveProg subset
 sh AndroidRemoveProg $1/subset

@@ -314,25 +314,25 @@ int main()
 
    printf("\n\n");
 
-   printf("running tests");
+   printf("running tests\n");
 
    long n, k, i;
 
-   n = 250;
-   k = 16000;
+   //n = 250;
+   //k = 16000;
+   n = 25;
+   k = 1600;
 
    ZZ p;
 
 
    for (i = 0; i < 15; i++) {
-      // printf(n << "/" << k; 
-      printf(".");
+     printf("%ld/%ld\n", n, k); 
+     //printf(".");
       RandomLen(p, k);
       ZZ_p::init(p);  
     
-
       ZZ_pX a, b, c, c1;
-
 
       random(a, n);
       random(b, n);
@@ -341,7 +341,6 @@ int main()
       //printf(ZZ_pInfo->FFTInfo->NumPrimes;
 
       c1 = conv<ZZ_pX>( KarMul( conv<ZZX>(a), conv<ZZX>(b) ) );
-
       if (c1 != c) {
          printf("ZZ_pX mul failed!\n");
          return 1;
@@ -386,7 +385,8 @@ int main()
    mul(x4, x2, x3);
 
    t = GetTime();
-   for (i = 0; i < 100000; i++)
+   //for (i = 0; i < 100000; i++)
+   for (i = 0; i < 1000; i++)
       mul(x4, x2, x3);
    t = GetTime()-t;
 
@@ -395,11 +395,12 @@ int main()
    rem(x2, x4, x1);
 
    t = GetTime();
-   for (i = 0; i < 100000; i++)
+   //for (i = 0; i < 100000; i++)
+   for (i = 0; i < 1000; i++)
       rem(x2, x4, x1);
    t = GetTime()-t;
 
-   printf("time for 2048/1024-bit rem: %fus\n", t*10);
+   printf("time for 2048/1024-bit rem: %fus\n", t*10); 
    
 
    GenPrime(p, 1024);
@@ -409,7 +410,8 @@ int main()
    InvMod(x2, x1, p);
 
    t = GetTime();
-   for (i = 0; i < 1000; i++)
+   //for (i = 0; i < 1000; i++)
+   for (i = 0; i < 10; i++)
       InvMod(x2, x1, p);
    t = GetTime()-t;
 
@@ -419,8 +421,10 @@ int main()
 
    // test modulus switching
    
-   n = 1024;
-   k = 1024;
+   //n = 1024;
+   //k = 1024;
+   n = 128;
+   k = 128;
    RandomLen(p, k);
 
    ZZ_p::init(p);
@@ -434,10 +438,12 @@ int main()
    mul(j3, j1, j2);
 
    t = GetTime();
-   for (i = 0; i < 200; i++) mul(j3, j1, j2);
+   //for (i = 0; i < 200; i++) mul(j3, j1, j2);
+   for (i = 0; i < 20; i++) mul(j3, j1, j2);
    t = GetTime()-t;
 
-   printf("time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: %fs\n",(t/200));
+   //printf("time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: %fs\n",(t/200));
+   printf("time to multiply degree 1023 polynomials\n   modulo a 1024-bit number: %fs\n",(t/20));
 
    GF2X_time();
 

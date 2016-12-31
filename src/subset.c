@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
    ZZ seed;
    seed << 999999; /*(long) atoi(argv[5])*/;
-   printf("seed: 999999\n")
+   printf("seed: 999999\n");
 
    if (seed != 0)
       SetSeed(seed);
@@ -51,7 +51,8 @@ int main(int argc, char** argv)
 
    long iter;
 
-   for (iter = 1; iter <= 20; iter++) {
+   for (iter = 1; iter <= 5; iter++) {
+   //for (iter = 1; iter <= 20; iter++) {
       vec_ZZ a;
       a.SetLength(n);
    
@@ -144,8 +145,9 @@ int main(int argc, char** argv)
 
    printf("\n");
 
-   printf("number of success: %f\n", TotalSucc);
-   printf("average time: %f\n", TotalTime/20);
+   printf("number of success: %ld\n", TotalSucc);
+   //printf("average time: %f\n", TotalTime/20);
+   printf("average time: %f\n", TotalTime/5);
 
    return 0;
 }

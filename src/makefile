@@ -6,7 +6,8 @@
 ###############################################################
 
 PHONE_TMP_DIR=/data/local/tmp/test_ntl
-# cppkonsultants: manually change only this variable to choose different ABI.
+
+TARGET_ARCH_ABI=$(ANDROID_ABI)
 
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 TOOLCHAIN_PREFIX=aarch64-linux-android
@@ -334,13 +335,12 @@ TARGET_CRTBEGIN_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtbegin_dynamic.o
 TARGET_CRTEND_DYNAMIC_O = $(PLATFORM_DIR)/usr/lib/crtend_android.o
 
 TARGET_LIBGCC := $(shell $(CXX) -print-libgcc-file-name)
-TARGET_LDLIBS := -Wl,-rpath-link=$(PLATFORM_DIR)/usr/lib
+TARGET_LDFLAGS := -Wl,-rpath-link=$(PLATFORM_DIR)/usr/lib
 
 # cppkonsultants: commented out
 # TARGET_CXXLIBS := $(shell $(CXX) -print-file-name=libstdc++.a)
 # TARGET_CXXLIBS += $(shell $(CXX) -print-file-name=libsupc++.a)
 # TARGET_CXXLIBS += -lstdc++ -lsupc++
-
 
 PRIVATE_CLIBS = -lc -lm
 NTL_INCLUDE = -I../include -I.
@@ -348,17 +348,16 @@ NTL_INCLUDE = -I../include -I.
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
     CFLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb
     TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker -Wl,--fix-cortex-a8 -Wl,--no-undefined -Wl,-z,noexecstack
-    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a
 else ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
     CFLAGS +=
     TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker64 -Wl,--no-undefined -Wl,-z,noexecstack -Wl,-m,aarch64linux
-    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/arm64-v8a
 else
     CFLAGS += -march=armv5te -mtune=xscale -msoft-float -mthumb
     TARGET_LDFLAGS = -Wl,-dynamic-linker,/system/bin/linker -Wl,--no-undefined -Wl,-z,noexecstack
-    TARGET_LDLIBS += -L$(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/armeabi
 endif
-CFLAGS += $(CXXFLAGS) -frtti -fexceptions -DANDROID
+TARGET_LDLIBS += $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libc++_static.a $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libc++abi.a $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libandroid_support.a -latomic
+
+CFLAGS += $(CXXFLAGS) -fno-rtti -fno-exceptions -DANDROID
 
 COMPILE = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
@@ -367,18 +366,20 @@ COMPILE = $(CXX) $(NTL_INCLUDE) \
     $(CFLAGS) \
     -c
 
-LINK = $(CXX) $(NTL_INCLUDE) \
+LINKER_CMD = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
     -Wl,--gc-sections \
     -Wl,-z,nocopyreloc \
     -pie \
     $(CFLAGS) \
-    $(TARGET_LDFLAGS) \
-    $(TARGET_LDLIBS) \
-    -L$(PLATFORM_DIR)/usr/lib \
+    $(TARGET_LDFLAGS)
+
+LINK_LIBRARIES = $(TARGET_LDLIBS) \
     $(TARGET_LIBGCC) \
     $(TARGET_CXXLIBS) \
     $(PRIVATE_CLIBS)
+
+LINK = $(LINKER_CMD) $(LINK_LIBRARIES)
 
 # COMPILE = $(CXX) $(NTL_INCLUDE) $(CPPFLAGS) $(CXXAUTOFLAGS) $(CXXFLAGS) -c
 
@@ -466,7 +467,7 @@ CheckPCLMUL: CheckPCLMUL.c
 	$(LCOMP) $(COMPILE) $(GF2X_OPT_INCDIR) $<
 
 .c: 
-	$(LINK) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB)
+	$(LINKER_CMD) -o $@ $< ntl.a $(LINK_LIBRARIES) $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB)
 # 	$(LIBTOOL) --tag=CXX --mode=link $(LINK) -o $@ $< libntl.la #LSHAR
 
 #################################################################

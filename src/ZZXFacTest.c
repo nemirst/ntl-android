@@ -1,5 +1,5 @@
 #include <NTL/ZZXFactoring.h>
-#inclde <fstream>
+#include <fstream>
 NTL_CLIENT
 
 

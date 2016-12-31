@@ -33,7 +33,7 @@ int main()
    long j;
    for (j = 0; j < 5; j++) {
       long n = RandomBnd(40)+10;
-      printf("%f ", n);
+      printf("%ld ", n);
 
       random(f, n);
       SetCoeff(f, n);
