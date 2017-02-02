@@ -357,7 +357,7 @@ else
 endif
 TARGET_LDLIBS += $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libc++_static.a $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libc++abi.a $(NDK_DIR)/sources/cxx-stl/llvm-libc++/libs/$(TARGET_ARCH_ABI)/libandroid_support.a -latomic
 
-CFLAGS += $(CXXFLAGS) -fno-rtti -fno-exceptions -DANDROID
+CFLAGS += $(CXXFLAGS) -fno-rtti -fno-exceptions -DANDROID -fvisibility=hidden
 
 COMPILE = $(CXX) $(NTL_INCLUDE) \
     -Bdynamic \
